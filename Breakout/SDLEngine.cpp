@@ -7,10 +7,11 @@ SDLEngine::SDLEngine()
 	m_Window = nullptr;
 	m_ScreenSurface = nullptr;
 	m_Renderer = nullptr;
-	m_Texture = nullptr;
 	
 	m_Input = nullptr;
-	m_paddle = nullptr;
+
+	m_Paddle = nullptr;
+	m_Ball = nullptr;
 
 	m_ScreenWidth = SCREEN_WIDTH;
 	m_ScreenHeight = SCREEN_HEIGHT;
@@ -27,15 +28,18 @@ SDLEngine::~SDLEngine()
 	if (m_Input)
 	{
 		delete m_Input;
+		m_Input = nullptr;
 	}
-	if (m_paddle)
+	if (m_Paddle)
 	{
-		delete m_paddle;
+		delete m_Paddle;
+		m_Paddle = nullptr;
 	}
-
-	//Free loaded image
-	SDL_DestroyTexture(m_Texture);
-	m_Texture = nullptr;
+	if (m_Ball)
+	{
+		delete m_Ball;
+		m_Ball = nullptr;
+	}
 
 	//Destroy window	
 	SDL_DestroyRenderer(m_Renderer);
@@ -90,81 +94,72 @@ bool SDLEngine::Init()
 	return true;
 }
 
-bool SDLEngine::LoadMedia()
+void SDLEngine::ClearLevelObjects()
 {
-	m_Texture = LoadTexture("Textures/wood.png");
-	if (m_Texture == nullptr)
+	if (m_Paddle)
 	{
-		printf("Failed to load texture image!\n");
-		return false;
+
 	}
+
+	m_Textures.Clear();
+	m_LevelBricks.clear();
+}
+
+bool SDLEngine::LoadLevelObjects(string level)
+{
+	m_Textures.LoadTexture("Textures/paddle/paddle_wood.png", m_Renderer);
+
+	m_Paddle = new GameObject();
+	m_Paddle->SpeedX = 0.0f;
+	m_Paddle->SpeedY = 0.0f;
+	m_Paddle->sprite = Sprite((float)m_ScreenWidth / 2 - 50, (float)m_ScreenHeight * 29 / 30 - 10, 100, 20, 0);
+	
+
 
 	return true;
 }
 
-SDL_Texture* SDLEngine::LoadTexture(string path)
-{
-	//The final texture
-	SDL_Texture* newTexture = nullptr;
-
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == nullptr)
-	{
-		printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
-		return nullptr;
-	}
-
-	//Create texture from surface pixels
-	newTexture = SDL_CreateTextureFromSurface(m_Renderer, loadedSurface);
-	if (newTexture == nullptr)
-	{
-		printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
-	}
-
-	//Get rid of old loaded surface
-	SDL_FreeSurface(loadedSurface);
-	return newTexture;
-}
-
-void SDLEngine::RenderSprite(Sprite *sprite)
+void SDLEngine::RenderSprite(const Sprite* sprite)
 {
 	if (sprite == nullptr)
 	{
 		return;
 	}
 
-	SDL_Rect renderQuad = { (int)sprite->PositionX, (int)sprite->PositionY, sprite->Width, sprite->Height};
+	SDL_Rect renderQuad = { (int)sprite->PositionX, (int)sprite->PositionY, sprite->Width, sprite->Height };
 
 	//Render to screen
-	SDL_RenderCopy(m_Renderer, m_Texture, nullptr, &renderQuad);
-}
-
-bool SDLEngine::LoadObjects()
-{
-	m_paddle = new Sprite(m_ScreenWidth / 2 - 50, m_ScreenHeight * 29 / 30 - 10, 100, 20, 0);
-	if (m_paddle == nullptr)
-	{
-		return false;
-	}
-
-	return true;
+	SDL_RenderCopy(m_Renderer, m_Textures[sprite->TextureIndex], nullptr, &renderQuad);
 }
 
 void SDLEngine::Update()
 {
 	if (m_Input->IsKeyDown(SDLK_LEFT))
 	{
-		if (m_paddle->PositionX > 0.f)
+		m_Paddle->SpeedX = -0.1f;
+	}
+	else if (m_Input->IsKeyDown(SDLK_RIGHT))
+	{
+		m_Paddle->SpeedX = 0.1f;
+	}
+	else
+	{
+		m_Paddle->SpeedX = 0.0f;
+	}
+
+	if (m_Paddle->SpeedX > 0.0f)
+	{
+		if ((int)m_Paddle->sprite.PositionX + m_Paddle->sprite.Width < m_ScreenWidth)
 		{
-			m_paddle->PositionX -= 0.1f;
+			m_Paddle->sprite.PositionX += m_Paddle->SpeedX;
 		}
 	}
-	if (m_Input->IsKeyDown(SDLK_RIGHT))
+
+	if (m_Paddle->SpeedX < 0.0f)
 	{
-		if ((int)m_paddle->PositionX + m_paddle->Width < m_ScreenWidth)
+		if ((int)m_Paddle->sprite.PositionX > 0)
 		{
-			m_paddle->PositionX += 0.1f;
+			m_Paddle->sprite.PositionX += m_Paddle->SpeedX;
 		}
 	}
 }
@@ -174,7 +169,7 @@ void SDLEngine::Render()
 	//Clear screen
 	SDL_RenderClear(m_Renderer);
 
-	RenderSprite(m_paddle);
+	RenderSprite(&m_Paddle->sprite);
 
 	//Update screen
 	SDL_RenderPresent(m_Renderer);

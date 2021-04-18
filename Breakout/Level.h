@@ -4,13 +4,16 @@
 #include <string>
 #include <vector>
 #include "BrickType.h"
+#include "Brick.h"
+
+#pragma comment(lib, "tinyxml2.lib")
 
 class Level
 {
 public: 
 	Level();
 	~Level();
-	bool LoadXML(std::string path);
+	bool LoadXML(std::string path, std::vector<Brick> &bricks);
 
 	int m_RowCount;
 	int m_ColumnCount;

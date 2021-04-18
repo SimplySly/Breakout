@@ -3,9 +3,13 @@
 #include <SDL.h>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <SDL_image.h>
 #include "Sprite.h"
 #include "Input.h"
+#include "TextureCollection.h"
+#include "Brick.h"
+#include "GameObject.h"
 
 
 #pragma comment (lib, "SDL2.lib")
@@ -23,10 +27,9 @@ public:
 	~SDLEngine();
 
 	bool Init();
-	bool LoadMedia();
-	void RenderSprite(Sprite *sprite);
-	SDL_Texture* LoadTexture(std::string path);
-	bool LoadObjects();
+	void RenderSprite(const Sprite *sprite);
+	bool LoadLevelObjects(std::string level);
+	void ClearLevelObjects();
 
 	void Loop();
 	void Update();
@@ -41,11 +44,11 @@ private:
 	//The window renderer
 	SDL_Renderer* m_Renderer;
 
-	//Current displayed texture
-	SDL_Texture* m_Texture;
 
 	int m_ScreenWidth, m_ScreenHeight;
 	Input *m_Input;
 
-	Sprite *m_paddle;
+	GameObject *m_Paddle, *m_Ball;
+	TextureCollection m_Textures;
+	std::vector<Brick> m_LevelBricks;
 };

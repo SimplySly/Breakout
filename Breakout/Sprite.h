@@ -3,7 +3,7 @@ class Sprite
 {
 public:
 	Sprite();
-	Sprite(int PosX, int PosY, int Width, int Height, int TextureIndex);
+	Sprite(float PosX, float PosY, int Width, int Height, int TextureIndex);
 
 	float PositionX;
 	float PositionY;

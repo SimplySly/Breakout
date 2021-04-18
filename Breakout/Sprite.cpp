@@ -4,7 +4,7 @@ Sprite::Sprite()
 {
 }
 
-Sprite::Sprite(int PosX, int PosY, int Width, int Height, int TextureIndex) 
+Sprite::Sprite(float PosX, float PosY, int Width, int Height, int TextureIndex) 
 	: PositionX(PosX), PositionY(PosY), Width(Width), Height(Height), TextureIndex(TextureIndex)
 {
 }

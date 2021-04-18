@@ -16,9 +16,19 @@ Level::~Level()
 
 
 
-bool Level::LoadXML(string path)
+bool Level::LoadXML(string path, vector<Brick> &Bricks)
 {
-	
+	XMLDocument doc;
+
+	doc.LoadFile(path.c_str());
+
+	if (doc.ErrorID())
+	{
+		return false;
+	}
+
+	/*XMLElement* attributeApproachElement = doc.FirstChildElement()->FirstChildElement("attributeApproach");
+	attributeApproachElement->QueryStringAttribute("v", &m_BackgroundTexture);*/
 
 	return true;
 }

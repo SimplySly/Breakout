@@ -15,21 +15,14 @@ int main(int argc, char* args[])
 		return 1;
 	}
 
-	if (!engine.LoadMedia())
+	if (!engine.LoadLevelObjects("Level1.xml"))
 	{
-		printf("Failed to load media!\n");
+		printf("Failed to load objects!\n");
 
 		return 2;
 	}
 
-	if (!engine.LoadObjects())
-	{
-		printf("Failed to load objects!\n");
-
-		return 3;
-	}
-
-	engine.Loop();;
+	engine.Loop();
 	
 
     return 0;
