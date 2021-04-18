@@ -80,13 +80,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\SDL2_image-2.0.5\lib\x64;C:\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\SDL2_image-2.0.5\include;C:\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\tinyxml2\x64-Release-Dll;..\SDL2_image-2.0.5\lib\x64;..\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\tinyxml2\include;..\SDL2_image-2.0.5\include;..\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\SDL2_image-2.0.5\include;C:\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SDL2_image-2.0.5\lib\x64;C:\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\tinyxml2\include;..\SDL2_image-2.0.5\include;..\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\tinyxml2\x64-Release-Dll;..\SDL2_image-2.0.5\lib\x64;..\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -147,16 +147,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BrickType.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SDLEngine.cpp" />
     <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BrickType.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="SDLEngine.h" />
     <ClInclude Include="Sprite.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Levels\Level1.xml">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Xml>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

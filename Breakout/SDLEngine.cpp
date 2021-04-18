@@ -198,6 +198,12 @@ void SDLEngine::Loop()
 			if (e.type == SDL_KEYDOWN)
 			{
 				m_Input->KeyDown(e.key.keysym.sym);
+
+
+				if (e.key.keysym.sym == SDLK_ESCAPE)
+				{
+					quit = true;
+				}
 			}
 			if (e.type == SDL_KEYUP)
 			{
