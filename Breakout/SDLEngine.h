@@ -10,6 +10,7 @@
 #include "TextureCollection.h"
 #include "Brick.h"
 #include "GameObject.h"
+#include "Level.h"
 
 
 #pragma comment (lib, "SDL2.lib")
@@ -47,6 +48,8 @@ private:
 
 	int m_ScreenWidth, m_ScreenHeight;
 	Input *m_Input;
+
+	Level m_LoadedLevel;
 
 	GameObject *m_Paddle, *m_Ball;
 	TextureCollection m_Textures;

@@ -98,7 +98,11 @@ void SDLEngine::ClearLevelObjects()
 {
 	if (m_Paddle)
 	{
-
+		delete m_Paddle;
+	}
+	if (m_Ball)
+	{
+		delete m_Ball;
 	}
 
 	m_Textures.Clear();
@@ -107,14 +111,31 @@ void SDLEngine::ClearLevelObjects()
 
 bool SDLEngine::LoadLevelObjects(string level)
 {
-	m_Textures.LoadTexture("Textures/paddle/paddle_wood.png", m_Renderer);
+	if (!m_Textures.LoadTexture("Textures/paddle/paddle_wood.png", m_Renderer))
+	{
+		return false;
+	}
 
 	m_Paddle = new GameObject();
 	m_Paddle->SpeedX = 0.0f;
 	m_Paddle->SpeedY = 0.0f;
 	m_Paddle->sprite = Sprite((float)m_ScreenWidth / 2 - 50, (float)m_ScreenHeight * 29 / 30 - 10, 100, 20, 0);
 	
+	if (!m_Textures.LoadTexture("Textures/ball/ball.png", m_Renderer))
+	{
+		return false;
+	}
 
+	m_Ball = new GameObject();
+	m_Ball->SpeedX = 0.0f;
+	m_Ball->SpeedY = 0.0f;
+	m_Ball->sprite = Sprite((float)m_ScreenWidth / 2, (float)m_ScreenHeight / 2, 20, 20, 1);
+
+
+	if (!m_LoadedLevel.LoadXML(level, m_LevelBricks, m_Textures, m_Renderer))
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -168,6 +189,10 @@ void SDLEngine::Render()
 {
 	//Clear screen
 	SDL_RenderClear(m_Renderer);
+
+	SDL_RenderCopy(m_Renderer, m_Textures[2], nullptr, nullptr);
+
+	RenderSprite(&m_Ball->sprite);
 
 	RenderSprite(&m_Paddle->sprite);
 

@@ -3,7 +3,7 @@ RowCount="30"
 ColumnCount="20"
 RowSpacing="3"
 ColumnSpacing="3"
-BackgroundTexture="Textures/Boards/Board_01.dds">
+BackgroundTexture="Textures/Boards/space.jpg">
   <BrickTypes>
     <!-- Soft Brick -->
     <BrickType

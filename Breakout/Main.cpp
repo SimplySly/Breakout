@@ -15,7 +15,7 @@ int main(int argc, char* args[])
 		return 1;
 	}
 
-	if (!engine.LoadLevelObjects("Level1.xml"))
+	if (!engine.LoadLevelObjects("Levels/Level1.xml"))
 	{
 		printf("Failed to load objects!\n");
 
