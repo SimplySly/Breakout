@@ -133,7 +133,7 @@ bool SDLEngine::LoadLevelObjects(string levelPath)
 
 	XMLLevelLoader level;
 
-	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks, m_Textures, m_Renderer))
+	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks, m_Textures, m_Renderer, m_ScreenWidth, m_ScreenHeight))
 	{
 		return false;
 	}
@@ -196,9 +196,17 @@ void SDLEngine::Render()
 
 	SDL_RenderCopy(m_Renderer, m_Textures[m_LevelInfo.BackgroundTextureIndex], nullptr, nullptr);
 
-	RenderSprite(&m_Ball->sprite);
+	for (const auto &brick : m_LevelBricks)
+	{
+		RenderSprite(&brick.sprite);
+	}
 
 	RenderSprite(&m_Paddle->sprite);
+
+	RenderSprite(&m_Ball->sprite);
+
+
+
 
 	//Update screen
 	SDL_RenderPresent(m_Renderer);
