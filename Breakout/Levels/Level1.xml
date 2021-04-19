@@ -24,7 +24,7 @@ BackgroundTexture="Textures/Boards/space.jpg">
     <!-- Hard Brick -->
     <BrickType
     Id="H"
-    Texture="Textures/Bricks/hard-brick.jfif"
+    Texture="Textures/Bricks/hard-brick3.jpg"
     HitPoints="3"
     HitSound="Sounds/Hit_03.wav"
     BreakSound="Sounds/Break_03.wav"
