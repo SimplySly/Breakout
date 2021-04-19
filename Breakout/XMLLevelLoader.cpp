@@ -1,18 +1,20 @@
-#include "Level.h"
+#include "XMLLevelLoader.h"
+#include "StdStringExtensions.h"
+
 using namespace std;
 using namespace tinyxml2;
 
-Level::Level()
+XMLLevelLoader::XMLLevelLoader()
 {
 	m_BackgroundTexture = nullptr;
 }
-Level::~Level()
+XMLLevelLoader::~XMLLevelLoader()
 {
 }
 
 
 
-bool Level::LoadXML(string path, int& bgTextureIndex, vector<Brick>& bricks, TextureCollection &textureCollection, SDL_Renderer* pRenderer)
+bool XMLLevelLoader::LoadFromXML(string path, LevelInfo& levelInfo, vector<Brick>& bricks, TextureCollection &textureCollection, SDL_Renderer* pRenderer)
 {
 	XMLDocument doc;
 
@@ -34,7 +36,7 @@ bool Level::LoadXML(string path, int& bgTextureIndex, vector<Brick>& bricks, Tex
 		return false;
 	}
 
-	bgTextureIndex = textureCollection.Size();
+	levelInfo.BackgroundTextureIndex = textureCollection.Size();
 	if (!textureCollection.LoadTexture(m_BackgroundTexture, pRenderer))
 	{
 		return false;
@@ -54,13 +56,13 @@ bool Level::LoadXML(string path, int& bgTextureIndex, vector<Brick>& bricks, Tex
 		}
 	}
 
-	LoadBrickList(levelElement, textureBaseIndex, bricks);
+	LoadBrickList(levelElement, textureBaseIndex, bricks, levelInfo.BackgroundTextureIndex);
 
 
 	return true;
 }
 
-bool Level::LoadLevelAttributes(XMLElement *levelElement)
+bool XMLLevelLoader::LoadLevelAttributes(XMLElement *levelElement)
 {
 	if (levelElement->QueryIntAttribute("RowCount", &m_RowCount) != XML_SUCCESS)
 	{
@@ -86,7 +88,7 @@ bool Level::LoadLevelAttributes(XMLElement *levelElement)
 	return true;
 }
 
-bool Level::LoadBrickTypes(XMLElement *levelElement)
+bool XMLLevelLoader::LoadBrickTypes(XMLElement *levelElement)
 {
 	XMLElement* pBrickTypeList = levelElement->FirstChildElement("BrickTypes");
 	if (pBrickTypeList == nullptr)
@@ -119,11 +121,13 @@ bool Level::LoadBrickTypes(XMLElement *levelElement)
 
 		if (pBrickTypeElement->QueryStringAttribute("BreakSound", (const char**)&brickType.BreakSound) != XML_SUCCESS)
 		{
+			//can be omitted if brick can't break
 			brickType.BreakSound = nullptr;
 		}
 
 		if (pBrickTypeElement->QueryIntAttribute("BreakScore", &brickType.BreakScore) != XML_SUCCESS)
 		{
+			//can be omitted if brick can't break
 			brickType.BreakScore = 0;
 		}
 
@@ -133,7 +137,7 @@ bool Level::LoadBrickTypes(XMLElement *levelElement)
 	return true;
 }
 
-bool Level::LoadBrickList(XMLElement* levelElement, int textureBaseIndex, std::vector<Brick> &bricks)
+bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, int textureBaseIndex, std::vector<Brick> &bricks, int &BricksToDestroy)
 {
 	XMLElement* brickList = levelElement->FirstChildElement("Bricks");
 	if (brickList == nullptr)
@@ -145,5 +149,9 @@ bool Level::LoadBrickList(XMLElement* levelElement, int textureBaseIndex, std::v
 	{
 		return false;
 	}
+
 	const char* brickListString = textNode->Value();
+
+	string LevelData = string(brickListString);
+
 }

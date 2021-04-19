@@ -152,7 +152,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Level.cpp" />
+    <ClCompile Include="LevelInfo.cpp" />
+    <ClCompile Include="XMLLevelLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SDLEngine.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -164,7 +165,9 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="Level.h" />
+    <ClInclude Include="LevelInfo.h" />
+    <ClInclude Include="StdStringExtensions.h" />
+    <ClInclude Include="XMLLevelLoader.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="SDLEngine.h" />
     <ClInclude Include="Sprite.h" />

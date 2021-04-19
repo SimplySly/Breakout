@@ -10,8 +10,9 @@
 #include "TextureCollection.h"
 #include "Brick.h"
 #include "GameObject.h"
-#include "Level.h"
+#include "XMLLevelLoader.h"
 #include "GameTimer.h"
+#include "LevelInfo.h"
 
 
 #pragma comment (lib, "SDL2.lib")
@@ -53,8 +54,8 @@ private:
 	int m_ScreenWidth, m_ScreenHeight;
 	Input *m_Input;
 
+	LevelInfo m_LevelInfo;
 
-	int m_BackgroundTextureIndex;
 	GameObject *m_Paddle, *m_Ball;
 	TextureCollection m_Textures;
 	std::vector<Brick> m_LevelBricks;

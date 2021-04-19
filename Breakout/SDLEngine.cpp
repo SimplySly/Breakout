@@ -131,9 +131,9 @@ bool SDLEngine::LoadLevelObjects(string levelPath)
 	m_Ball->SpeedY = 0.0f;
 	m_Ball->sprite = Sprite((float)m_ScreenWidth / 2, (float)m_ScreenHeight / 2, 20, 20, 1);
 
-	Level level;
+	XMLLevelLoader level;
 
-	if (!level.LoadXML(levelPath, m_BackgroundTextureIndex, m_LevelBricks, m_Textures, m_Renderer))
+	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks, m_Textures, m_Renderer))
 	{
 		return false;
 	}
@@ -194,7 +194,7 @@ void SDLEngine::Render()
 	//Clear screen
 	SDL_RenderClear(m_Renderer);
 
-	SDL_RenderCopy(m_Renderer, m_Textures[m_BackgroundTextureIndex], nullptr, nullptr);
+	SDL_RenderCopy(m_Renderer, m_Textures[m_LevelInfo.BackgroundTextureIndex], nullptr, nullptr);
 
 	RenderSprite(&m_Ball->sprite);
 

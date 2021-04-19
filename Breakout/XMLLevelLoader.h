@@ -7,21 +7,22 @@
 #include "BrickType.h"
 #include "Brick.h"
 #include "TextureCollection.h"
+#include "LevelInfo.h"
 
 #pragma comment(lib, "tinyxml2.lib")
 
-class Level
+class XMLLevelLoader
 {
 public: 
-	Level();
-	~Level();
-	bool LoadXML(std::string path, int& bgTextureIndex, std::vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer);
+	XMLLevelLoader();
+	~XMLLevelLoader();
+	bool LoadFromXML(std::string path, LevelInfo &levelInfo, std::vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer);
 
 
 private:
 	bool LoadBrickTypes(tinyxml2::XMLElement* levelElement);
 	bool LoadLevelAttributes(tinyxml2::XMLElement* levelElement);
-	bool LoadBrickList(tinyxml2::XMLElement* levelElement, int textureBaseIndex, std::vector<Brick> &bricks);
+	bool LoadBrickList(tinyxml2::XMLElement* levelElement, int textureBaseIndex, std::vector<Brick> &bricks, int &BricksToDestroy);
 
 	int m_RowCount;
 	int m_ColumnCount;
