@@ -1,8 +1,6 @@
 //Using SDL and standard IO
-#include "SDLEngine.h"
-#include <iostream>
-#include "Main.h"
-#define main main   
+
+#include "Main.h"   
 
 int main(int argc, char* args[])
 {
