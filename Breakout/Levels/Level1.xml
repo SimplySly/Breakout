@@ -8,7 +8,7 @@ BackgroundTexture="Textures/Boards/space.jpg">
     <!-- Soft Brick -->
     <BrickType
     Id="S"
-    Texture="Textures/Bricks/Soft.dds"
+    Texture="Textures/Bricks/light-brick.jpg"
     HitPoints="1"
     HitSound="Sounds/Hit_01.wav"
     BreakSound="Sounds/Break_01.wav"
@@ -16,7 +16,7 @@ BackgroundTexture="Textures/Boards/space.jpg">
     <!-- Medium Brick -->
     <BrickType
     Id="M"
-    Texture="Textures/Bricks/Medium.dds"
+    Texture="Textures/Bricks/medium-brick.jpg"
     HitPoints="2"
     HitSound="Sounds/Hit_02.wav"
     BreakSound="Sounds/Break_02.wav"
@@ -24,7 +24,7 @@ BackgroundTexture="Textures/Boards/space.jpg">
     <!-- Hard Brick -->
     <BrickType
     Id="H"
-    Texture="Textures/Bricks/Hard.dds"
+    Texture="Textures/Bricks/hard-brick.jfif"
     HitPoints="3"
     HitSound="Sounds/Hit_03.wav"
     BreakSound="Sounds/Break_03.wav"
@@ -32,7 +32,7 @@ BackgroundTexture="Textures/Boards/space.jpg">
     <!-- Impenetrable Brick -->
     <BrickType
     Id="I"
-    Texture="Textures/Bricks/Impenetrable.dds"
+    Texture="Textures/Bricks/stone.jpg"
     HitPoints="Infinite"
     HitSound="Sounds/Hit_04.wav" />
   </BrickTypes>
