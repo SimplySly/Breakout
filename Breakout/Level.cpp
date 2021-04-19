@@ -8,15 +8,11 @@ Level::Level()
 }
 Level::~Level()
 {
-	/*if (m_BackgroundTexture)
-	{
-		delete[] m_BackgroundTexture;
-	}*/
 }
 
 
 
-bool Level::LoadXML(string path, vector<Brick>& bricks, TextureCollection &textureCollection, SDL_Renderer* pRenderer)
+bool Level::LoadXML(string path, int& bgTextureIndex, vector<Brick>& bricks, TextureCollection &textureCollection, SDL_Renderer* pRenderer)
 {
 	XMLDocument doc;
 
@@ -49,6 +45,7 @@ bool Level::LoadXML(string path, vector<Brick>& bricks, TextureCollection &textu
 		return false;
 	}
 
+	bgTextureIndex = textureCollection.Size();
 	if (!textureCollection.LoadTexture(m_BackgroundTexture, pRenderer))
 	{
 		return false;

@@ -15,7 +15,7 @@ class Level
 public: 
 	Level();
 	~Level();
-	bool LoadXML(std::string path, std::vector<Brick> &bricks, TextureCollection &textureCollection, SDL_Renderer* pRenderer);
+	bool LoadXML(std::string path, int& bgTextureIndex, std::vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer);
 
 	int m_RowCount;
 	int m_ColumnCount;

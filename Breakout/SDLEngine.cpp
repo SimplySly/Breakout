@@ -20,7 +20,7 @@ SDLEngine::SDLEngine()
 SDLEngine::SDLEngine(int ScreenWidth, int ScreenHeight) : SDLEngine()
 {
 	m_ScreenWidth = ScreenWidth;
-	m_ScreenHeight = m_ScreenHeight;
+	m_ScreenHeight = ScreenHeight;
 }
 
 SDLEngine::~SDLEngine()
@@ -109,7 +109,7 @@ void SDLEngine::ClearLevelObjects()
 	m_LevelBricks.clear();
 }
 
-bool SDLEngine::LoadLevelObjects(string level)
+bool SDLEngine::LoadLevelObjects(string levelPath)
 {
 	if (!m_Textures.LoadTexture("Textures/paddle/paddle_wood.png", m_Renderer))
 	{
@@ -131,8 +131,9 @@ bool SDLEngine::LoadLevelObjects(string level)
 	m_Ball->SpeedY = 0.0f;
 	m_Ball->sprite = Sprite((float)m_ScreenWidth / 2, (float)m_ScreenHeight / 2, 20, 20, 1);
 
+	Level level;
 
-	if (!m_LoadedLevel.LoadXML(level, m_LevelBricks, m_Textures, m_Renderer))
+	if (!level.LoadXML(levelPath, m_BackgroundTextureIndex, m_LevelBricks, m_Textures, m_Renderer))
 	{
 		return false;
 	}
@@ -155,13 +156,16 @@ void SDLEngine::RenderSprite(const Sprite* sprite)
 
 void SDLEngine::Update()
 {
+	float TimeDelta = m_Timer.GetTicks() / 1000.0f;
+	float PaddleSpeed = 350.0f;
+
 	if (m_Input->IsKeyDown(SDLK_LEFT))
 	{
-		m_Paddle->SpeedX = -0.1f;
+		m_Paddle->SpeedX = -PaddleSpeed;
 	}
 	else if (m_Input->IsKeyDown(SDLK_RIGHT))
 	{
-		m_Paddle->SpeedX = 0.1f;
+		m_Paddle->SpeedX = PaddleSpeed;
 	}
 	else
 	{
@@ -172,7 +176,7 @@ void SDLEngine::Update()
 	{
 		if ((int)m_Paddle->sprite.PositionX + m_Paddle->sprite.Width < m_ScreenWidth)
 		{
-			m_Paddle->sprite.PositionX += m_Paddle->SpeedX;
+			m_Paddle->sprite.PositionX += m_Paddle->SpeedX * TimeDelta;
 		}
 	}
 
@@ -180,7 +184,7 @@ void SDLEngine::Update()
 	{
 		if ((int)m_Paddle->sprite.PositionX > 0)
 		{
-			m_Paddle->sprite.PositionX += m_Paddle->SpeedX;
+			m_Paddle->sprite.PositionX += m_Paddle->SpeedX * TimeDelta;
 		}
 	}
 }
@@ -190,7 +194,7 @@ void SDLEngine::Render()
 	//Clear screen
 	SDL_RenderClear(m_Renderer);
 
-	SDL_RenderCopy(m_Renderer, m_Textures[2], nullptr, nullptr);
+	SDL_RenderCopy(m_Renderer, m_Textures[m_BackgroundTextureIndex], nullptr, nullptr);
 
 	RenderSprite(&m_Ball->sprite);
 
@@ -207,6 +211,8 @@ void SDLEngine::Loop()
 
 	//Event handler
 	SDL_Event e;
+	
+	m_Timer.Start();
 
 	//While application is running
 	while (!quit)
@@ -218,7 +224,6 @@ void SDLEngine::Loop()
 			if (e.type == SDL_KEYDOWN)
 			{
 				m_Input->KeyDown(e.key.keysym.sym);
-
 
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
