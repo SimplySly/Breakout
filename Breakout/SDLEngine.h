@@ -19,8 +19,15 @@
 #pragma comment (lib, "SDL2_image.lib")
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+#define SCREEN_WIDTH	800
+#define SCREEN_HEIGHT	600
+
+#define HUD_HEIGHT		40
+
+#define PADDLE_SPEED	350.0f
+#define BALL_SPEED_X	100.0f
+#define BALL_SPEED_Y	400.0f
+
 
 class SDLEngine
 {
@@ -52,6 +59,7 @@ private:
 
 
 	int m_ScreenWidth, m_ScreenHeight;
+	int m_PlayableScreenWidth, m_PlayableScreenHeight;
 	Input *m_Input;
 
 	LevelInfo m_LevelInfo;

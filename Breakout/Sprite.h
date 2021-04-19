@@ -12,5 +12,14 @@ public:
 	int Height;
 
 	int TextureIndex;
+
+	float left();
+	float right();
+	float bottom();
+	float top();
+
+	float centerX();
+	float centerY();
+	float radius();
 };
 

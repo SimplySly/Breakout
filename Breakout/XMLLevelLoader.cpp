@@ -184,7 +184,8 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, int textureBaseInde
 	{
 		LevelStream >> brickId;
 
-		for (size_t i = 0; i < m_BrickTypes.size(); i++)
+		size_t i;
+		for (i = 0; i < m_BrickTypes.size(); i++)
 		{
 			if (brickId == m_BrickTypes[i].Id)
 			{
@@ -200,27 +201,32 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, int textureBaseInde
 
 				brick.sprite = Sprite(columnIndex * m_BrickSizeX * spaceUnitX + columnIndex * m_ColumnSpacing * spaceUnitX,
 					rowIndex * m_BrickSizeY * spaceUnitY + rowIndex * m_RowSpacing * spaceUnitY,
-					m_BrickSizeX * spaceUnitX,
-					m_BrickSizeY * spaceUnitY,
-					textureBaseIndex + i);
+					(int)(m_BrickSizeX * spaceUnitX),
+					(int)(m_BrickSizeY * spaceUnitY),
+					textureBaseIndex + (int)i);
 
 				bricks.push_back(brick);
-
-				columnIndex++;
-				if (columnIndex >= m_ColumnCount)
-				{
-					columnIndex = 0;
-					rowIndex++;
-					if (rowIndex >= m_RowCount)
-					{
-						//don't read more than specified row count
-						return true;
-					}
-				}
-
 				break;
 			}
 		}
+
+		if (i == m_BrickTypes.size() && brickId != "_")
+		{
+			return false;
+		}
+
+		columnIndex++;
+		if (columnIndex >= m_ColumnCount)
+		{
+			columnIndex = 0;
+			rowIndex++;
+			if (rowIndex >= m_RowCount)
+			{
+				//don't read more than specified row count
+				return true;
+			}
+		}
+
 	}
 
 	if (bricks.empty())
