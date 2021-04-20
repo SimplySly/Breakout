@@ -12,13 +12,6 @@ int main(int argc, char* args[])
 		return 1;
 	}
 
-	if (!engine.LoadLevelObjects("Levels/Level1.xml"))
-	{
-		printf("Failed to load objects!\n");
-
-		return 2;
-	}
-
 	engine.Loop();
 	
 

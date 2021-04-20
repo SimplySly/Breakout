@@ -15,6 +15,7 @@
 #include "LevelInfo.h"
 #include "Collision.h"
 #include "MathExtensions.h"
+#include "PlayerInfo.h"
 
 
 #pragma comment (lib, "SDL2.lib")
@@ -27,6 +28,10 @@
 #define HUD_HEIGHT				40
 
 #define PADDLE_SPEED			350.0f
+#define PADDLE_WIDTH			100
+#define PADDLE_HEIGHT			20
+
+#define BALL_RADIUS				20
 #define BALL_SPEED_X			0.0f
 #define BALL_SPEED_Y			400.0f
 
@@ -35,6 +40,19 @@
 
 //#define OPPOSITE_DIRECTION_VIA_EDGE
 //#define OPPOSITE_DIRECTION_VIA_SPEED
+
+enum GAME_STATE {
+	GAME_STATE_LEVEL_DISPLAY = 0,
+	GAME_STATE_PAUSE,
+	GAME_STATE_PLAYING,
+	GAME_STATE_LOSE,
+	GAME_STATE_WIN,
+	GAME_STATE_QUIT
+};
+
+#define LEVEL_DISPLAY_TEXTURE	"Textures/state/LevelDisplay.jpg"
+#define WIN_TEXTURE		"Textures/state/win.jpg"
+#define LOSE_TEXTURE		"Textures/state/lose.jpg"
 
 class SDLEngine
 {
@@ -60,20 +78,36 @@ private:
 	//The window renderer
 	SDL_Renderer* m_Renderer;
 
+	SDL_Texture* m_WinTexture;
+	SDL_Texture* m_LoseTexture;
+	SDL_Texture* m_LevelDisplayTexture;
+
 	GameTimer m_Timer;
+
+	bool InitGameState(); 
+	SDL_Texture* LoadTexture(std::string path);
 
 	void RenderSprite(const Sprite* sprite);
 
 	bool BounceOppositeDirection(float distanceX, Vector2 ballDirection);
 	bool BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY);
 	void BounceBallOffPaddle();
+	void UpdatePlayingState();
 
+	void ResetGameObjects();
+	void BallDeath();
+	void LevelWin();
+
+	void RenderGame();
+	void RenderTexture(SDL_Texture* pTexture);
 
 	int m_ScreenWidth, m_ScreenHeight;
 	int m_PlayableScreenWidth, m_PlayableScreenHeight;
 	Input *m_Input;
 
 	LevelInfo m_LevelInfo;
+	PlayerInfo m_PlayerInfo;
+	GAME_STATE m_GameState;
 
 	GameObject *m_Paddle, *m_Ball;
 	TextureCollection m_Textures;

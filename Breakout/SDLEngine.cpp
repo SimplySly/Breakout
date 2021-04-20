@@ -7,6 +7,9 @@ SDLEngine::SDLEngine()
 	m_Window = nullptr;
 	m_ScreenSurface = nullptr;
 	m_Renderer = nullptr;
+	m_LevelDisplayTexture = nullptr;
+	m_WinTexture = nullptr;
+	m_LoseTexture = nullptr;
 
 	m_Input = nullptr;
 
@@ -46,6 +49,17 @@ SDLEngine::~SDLEngine()
 		delete m_Ball;
 		m_Ball = nullptr;
 	}
+
+	//Destroy textures
+	SDL_DestroyTexture(m_WinTexture);
+	m_WinTexture = nullptr;
+
+	SDL_DestroyTexture(m_LoseTexture);
+	m_LoseTexture = nullptr;
+
+	SDL_DestroyTexture(m_LevelDisplayTexture);
+	m_LevelDisplayTexture = nullptr;
+
 
 	//Destroy window	
 	SDL_DestroyRenderer(m_Renderer);
@@ -95,9 +109,66 @@ bool SDLEngine::Init()
 	//Get window surface
 	m_ScreenSurface = SDL_GetWindowSurface(m_Window);
 
+
+
 	m_Input = new Input();
+	if (m_Input == nullptr)
+	{
+		return false;
+	}
+	
+	InitGameState();
 
 	return true;
+}
+
+
+bool SDLEngine::InitGameState()
+{
+	m_PlayerInfo.SetToDefault();
+
+	m_GameState = GAME_STATE_LEVEL_DISPLAY;
+
+	m_LevelDisplayTexture = LoadTexture(LEVEL_DISPLAY_TEXTURE);
+	if (m_LevelDisplayTexture == nullptr)
+	{
+		return false;
+	}
+
+	m_LoseTexture = LoadTexture(LOSE_TEXTURE);
+	if (m_LoseTexture == nullptr)
+	{
+		return false;
+	}
+
+	m_WinTexture = LoadTexture(WIN_TEXTURE);
+	if (m_WinTexture == nullptr)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+SDL_Texture* SDLEngine::LoadTexture(string path)
+{
+	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
+	if (loadedSurface == nullptr)
+	{
+		printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
+		return nullptr;
+	}
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_Renderer, loadedSurface);
+	if (texture == nullptr)
+	{
+		printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
+		return nullptr;
+	}
+
+	SDL_FreeSurface(loadedSurface);
+
+	return texture;
 }
 
 void SDLEngine::ClearLevelObjects()
@@ -105,10 +176,12 @@ void SDLEngine::ClearLevelObjects()
 	if (m_Paddle)
 	{
 		delete m_Paddle;
+		m_Paddle = nullptr;
 	}
 	if (m_Ball)
 	{
 		delete m_Ball;
+		m_Ball = nullptr;
 	}
 
 	m_Textures.Clear();
@@ -121,11 +194,11 @@ bool SDLEngine::LoadLevelObjects(string levelPath)
 	{
 		return false;
 	}
-
+	
 	m_Paddle = new GameObject();
 	m_Paddle->SpeedX = 0.0f;
 	m_Paddle->SpeedY = 0.0f;
-	m_Paddle->sprite = Sprite((float)m_PlayableScreenWidth / 2 - 50, (float)m_PlayableScreenHeight * 29 / 30 - 10, 100, 20, 0);
+	m_Paddle->sprite = Sprite((float)m_PlayableScreenWidth / 2 - PADDLE_WIDTH / 2, (float)m_PlayableScreenHeight * 29 / 30 - 10, PADDLE_WIDTH, PADDLE_HEIGHT, 0);
 
 	if (!m_Textures.LoadTexture("Textures/ball/ball.png", m_Renderer))
 	{
@@ -135,7 +208,7 @@ bool SDLEngine::LoadLevelObjects(string levelPath)
 	m_Ball = new GameObject();
 	m_Ball->SpeedX = BALL_SPEED_X;
 	m_Ball->SpeedY = BALL_SPEED_Y;
-	m_Ball->sprite = Sprite((float)m_PlayableScreenWidth / 2, (float)m_PlayableScreenHeight / 2, 20, 20, 1);
+	m_Ball->sprite = Sprite((float)m_PlayableScreenWidth / 2 - BALL_RADIUS / 2, (float)m_PlayableScreenHeight / 2 - BALL_RADIUS / 2, BALL_RADIUS, BALL_RADIUS, 1);
 
 	XMLLevelLoader level;
 
@@ -158,6 +231,43 @@ void SDLEngine::RenderSprite(const Sprite* sprite)
 
 	//Render to screen
 	SDL_RenderCopy(m_Renderer, m_Textures[sprite->TextureIndex], nullptr, &renderQuad);
+}
+
+void SDLEngine::ResetGameObjects()
+{
+	m_Paddle->SpeedX = 0.0f;
+	m_Paddle->SpeedY = 0.0f;
+	m_Paddle->sprite.PositionX = (float)m_PlayableScreenWidth / 2 - m_Paddle->sprite.Width / 2;
+	m_Paddle->sprite.PositionY = (float)m_PlayableScreenHeight * 29 / 30 - m_Paddle->sprite.Height / 2;
+
+	m_Ball->SpeedX = BALL_SPEED_X;
+	m_Ball->SpeedY = BALL_SPEED_Y;
+	m_Ball->sprite.PositionX = (float)m_PlayableScreenWidth / 2 - BALL_RADIUS / 2; 
+	m_Ball->sprite.PositionY = (float)m_PlayableScreenHeight / 2 - BALL_RADIUS / 2;
+}
+
+void SDLEngine::BallDeath()
+{
+	m_PlayerInfo.Life--;
+	if (m_PlayerInfo.Life < 1)
+	{
+		m_GameState = GAME_STATE_LOSE;
+		ClearLevelObjects();
+
+		return;
+	}
+
+	ResetGameObjects();
+	m_GameState = GAME_STATE_PAUSE;
+}
+
+
+void SDLEngine::LevelWin()
+{
+	m_PlayerInfo.CurrentLevel++;
+	ClearLevelObjects();
+
+	m_GameState = GAME_STATE_LEVEL_DISPLAY;
 }
 
 bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY)
@@ -194,7 +304,8 @@ bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& fli
 	{
 		if (m_Ball->sprite.bottom() + ballDeltaY > m_PlayableScreenHeight)
 		{
-			//Life Loss Respawn
+			BallDeath();
+			
 			return true;
 		}
 	}
@@ -232,6 +343,7 @@ bool SDLEngine::BounceOppositeDirection(float distanceX, Vector2 ballDirection)
 	return false;
 }
 
+
 void SDLEngine::BounceBallOffPaddle()
 {
 	Vector2 bounceNormal(0.0f, -400.0f);
@@ -240,7 +352,7 @@ void SDLEngine::BounceBallOffPaddle()
 
 	float distanceX = m_Ball->sprite.centerX() - m_Paddle->sprite.centerX();
 	float rotateBounceNormalAngle = (distanceX / m_Paddle->sprite.Width / 2) * MAX_NORMAL_ROTATION;
-	
+
 	if (BounceOppositeDirection(distanceX, ballDirection))
 	{
 		return;
@@ -259,13 +371,8 @@ void SDLEngine::BounceBallOffPaddle()
 	m_Ball->SpeedY = ballDirection.y;
 }
 
-
-void SDLEngine::Update()
+void SDLEngine::UpdatePlayingState()
 {
-	if (m_Timer.IsPaused())
-	{
-		return;
-	}
 	/*PADDLE UPDATE*/
 	float TimeDelta = m_Timer.GetTicks() / 1000.0f;
 	float PaddleSpeed = PADDLE_SPEED;
@@ -375,7 +482,65 @@ void SDLEngine::Update()
 	m_Ball->sprite.PositionY += TimeDelta * m_Ball->SpeedY;
 }
 
-void SDLEngine::Render()
+
+void SDLEngine::Update()
+{
+	/*	switch looks ugly 
+		eventhough this whole code looks ugly, I wanted something to look pretty	
+		anyway who cares */
+	if (m_GameState == GAME_STATE_PLAYING)
+	{
+		UpdatePlayingState();
+
+		return;
+	}
+	if (m_GameState == GAME_STATE_PAUSE)
+	{
+		m_Timer.Pause();
+
+		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
+		{
+			m_GameState = GAME_STATE_PLAYING;
+			m_Timer.Start();
+		}
+
+		return;
+	}
+	if (m_GameState == GAME_STATE_LEVEL_DISPLAY)
+	{
+		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
+		{
+			m_GameState = GAME_STATE_PAUSE;
+			LoadLevelObjects("Levels/level1.xml");
+		}
+
+		return;
+	}
+
+	if (m_GameState == GAME_STATE_LOSE)
+	{
+		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
+		{
+			m_GameState = GAME_STATE_LEVEL_DISPLAY;
+			m_PlayerInfo.SetToDefault();
+			SDL_Delay(100);
+		}
+
+		return;
+	}
+
+	if (m_GameState == GAME_STATE_WIN)
+	{
+		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
+		{
+			m_GameState = GAME_STATE_QUIT;
+		}
+
+		return;
+	}
+}
+
+void SDLEngine::RenderGame()
 {
 	//Clear screen
 	SDL_RenderClear(m_Renderer);
@@ -398,6 +563,47 @@ void SDLEngine::Render()
 	SDL_RenderPresent(m_Renderer);
 }
 
+void SDLEngine::RenderTexture(SDL_Texture* pTexture)
+{
+	SDL_RenderClear(m_Renderer);
+
+	SDL_RenderCopy(m_Renderer, pTexture, nullptr, nullptr);
+
+	//Update screen
+	SDL_RenderPresent(m_Renderer);
+}
+
+void SDLEngine::Render()
+{
+	if (m_GameState == GAME_STATE_PLAYING || m_GameState == GAME_STATE_PAUSE)
+	{
+		RenderGame();
+
+		return;
+	}
+
+	if (m_GameState == GAME_STATE_LEVEL_DISPLAY)
+	{
+		RenderTexture(m_LevelDisplayTexture);
+
+		return;
+	}
+
+	if (m_GameState == GAME_STATE_WIN )
+	{
+		RenderTexture(m_WinTexture);
+
+		return;
+	}
+
+	if (m_GameState == GAME_STATE_LOSE )
+	{
+		RenderTexture(m_LoseTexture);
+
+		return;
+	}
+}
+
 void SDLEngine::Loop()
 {
 	//Main loop flag
@@ -406,10 +612,8 @@ void SDLEngine::Loop()
 	//Event handler
 	SDL_Event e;
 
-	m_Timer.Start();
-
 	//While application is running
-	while (!quit)
+	while (!quit || m_GameState == GAME_STATE_QUIT)
 	{
 		//Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
@@ -422,18 +626,6 @@ void SDLEngine::Loop()
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					quit = true;
-				}
-
-				if (e.key.keysym.sym == SDLK_SPACE)
-				{
-					if (m_Timer.IsPaused())
-					{
-						m_Timer.Start();
-					}
-					else
-					{
-						m_Timer.Pause();
-					}
 				}
 			}
 			if (e.type == SDL_KEYUP)

@@ -1,6 +1,6 @@
 #pragma once
 
-#define PI 3.14159265358979323846
+#define PI 3.14159265358979323846f
 
 template<class T>
 inline T& clamp(T& v, const T& lo, const T& hi)
