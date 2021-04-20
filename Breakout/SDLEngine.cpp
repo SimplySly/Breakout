@@ -7,7 +7,7 @@ SDLEngine::SDLEngine()
 	m_Window = nullptr;
 	m_ScreenSurface = nullptr;
 	m_Renderer = nullptr;
-	
+
 	m_Input = nullptr;
 
 	m_Paddle = nullptr;
@@ -126,7 +126,7 @@ bool SDLEngine::LoadLevelObjects(string levelPath)
 	m_Paddle->SpeedX = 0.0f;
 	m_Paddle->SpeedY = 0.0f;
 	m_Paddle->sprite = Sprite((float)m_PlayableScreenWidth / 2 - 50, (float)m_PlayableScreenHeight * 29 / 30 - 10, 100, 20, 0);
-	
+
 	if (!m_Textures.LoadTexture("Textures/ball/ball.png", m_Renderer))
 	{
 		return false;
@@ -160,24 +160,24 @@ void SDLEngine::RenderSprite(const Sprite* sprite)
 	SDL_RenderCopy(m_Renderer, m_Textures[sprite->TextureIndex], nullptr, &renderQuad);
 }
 
-bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY)
+bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY)
 {
 	if (m_Ball->SpeedX > 0)
 	{
 		if (m_Ball->sprite.right() + ballDeltaX > m_PlayableScreenWidth)
 		{
-			m_Ball->SpeedX = -m_Ball->SpeedX;
+			flipX = true;
 
-			return true;
+			return false;
 		}
 	}
 	if (m_Ball->SpeedX < 0)
 	{
 		if (m_Ball->sprite.left() + ballDeltaX < 0)
 		{
-			m_Ball->SpeedX = -m_Ball->SpeedX;
+			flipX = true;
 
-			return true;
+			return false;
 		}
 	}
 
@@ -185,17 +185,15 @@ bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY)
 	{
 		if (m_Ball->sprite.top() + ballDeltaY < 0)
 		{
-			m_Ball->SpeedY = -m_Ball->SpeedY;
+			flipY = true;
 
-			return true;
+			return false;
 		}
 	}
 	if (m_Ball->SpeedY > 0)
 	{
 		if (m_Ball->sprite.bottom() + ballDeltaY > m_PlayableScreenHeight)
 		{
-			m_Ball->SpeedY = -m_Ball->SpeedY;
-
 			//Life Loss Respawn
 			return true;
 		}
@@ -204,11 +202,73 @@ bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY)
 	return false;
 }
 
+bool SDLEngine::BounceOppositeDirection(float distanceX, Vector2 ballDirection)
+{
+#if defined(OPPOSITE_DIRECTION_VIA_EDGE)
+	if (fabs(distanceX) > m_Paddle->sprite.Width / 4)
+	{
+
+		if (atanf(fabs(ballDirection.y / ballDirection.x)) < PI / 3.0f)
+		{
+
+			m_Ball->SpeedX = ballDirection.x;
+			m_Ball->SpeedY = ballDirection.y;
+
+			return true;
+		}
+	}
+#elif defined(OPPOSITE_DIRECTION_VIA_SPEED)
+	cout << "called" << endl;
+	if (m_Ball->SpeedX > 0.0f && m_Paddle->SpeedX < 0.0f
+		|| m_Ball->SpeedX < 0.0f && m_Paddle->SpeedX > 0.0f)
+	{
+		m_Ball->SpeedX = ballDirection.x;
+		m_Ball->SpeedY = ballDirection.y;
+
+		return true;
+	}
+#endif
+
+	return false;
+}
+
+void SDLEngine::BounceBallOffPaddle()
+{
+	Vector2 bounceNormal(0.0f, -400.0f);
+	Vector2 ballDirection(-m_Ball->SpeedX, -m_Ball->SpeedY);
+
+
+	float distanceX = m_Ball->sprite.centerX() - m_Paddle->sprite.centerX();
+	float rotateBounceNormalAngle = (distanceX / m_Paddle->sprite.Width / 2) * MAX_NORMAL_ROTATION;
+	
+	if (BounceOppositeDirection(distanceX, ballDirection))
+	{
+		return;
+	}
+
+	bounceNormal.rotate(rotateBounceNormalAngle);
+	bounceNormal.reflect(ballDirection);
+
+
+	if (ballDirection.y > 0)
+	{
+		ballDirection.y = -ballDirection.y;
+	}
+
+	m_Ball->SpeedX = ballDirection.x;
+	m_Ball->SpeedY = ballDirection.y;
+}
+
+
 void SDLEngine::Update()
 {
+	if (m_Timer.IsPaused())
+	{
+		return;
+	}
+	/*PADDLE UPDATE*/
 	float TimeDelta = m_Timer.GetTicks() / 1000.0f;
 	float PaddleSpeed = PADDLE_SPEED;
-	
 
 	if (m_Input->IsKeyDown(SDLK_LEFT))
 	{
@@ -240,55 +300,76 @@ void SDLEngine::Update()
 		}
 	}
 
+
+	/*BALL UPDATE*/
 	float ballDeltaX = TimeDelta * m_Ball->SpeedX;
 	float ballDeltaY = TimeDelta * m_Ball->SpeedY;
-	// boundaries
-	if (!BallBoundaryUpdate(ballDeltaX, ballDeltaY))
+
+
+	bool flipX = false, flipY = false;
+
+	if (BallBoundaryUpdate(ballDeltaX, ballDeltaY, flipX, flipY))
 	{
-		Sprite newPos;
-		bool flipX = false, flipY = false;
+		return;
+	}
 
-		newPos.PositionX = m_Ball->sprite.PositionX + TimeDelta * m_Ball->SpeedX;
-		newPos.PositionY = m_Ball->sprite.PositionY + TimeDelta * m_Ball->SpeedY;
-		newPos.Width = m_Ball->sprite.Width;
-		newPos.Height = m_Ball->sprite.Height;
+	Sprite newPos;
 
-		for (auto& x : m_LevelBricks)
+	newPos.PositionX = m_Ball->sprite.PositionX + TimeDelta * m_Ball->SpeedX;
+	newPos.PositionY = m_Ball->sprite.PositionY + TimeDelta * m_Ball->SpeedY;
+	newPos.Width = m_Ball->sprite.Width;
+	newPos.Height = m_Ball->sprite.Height;
+
+	for (auto& x : m_LevelBricks)
+	{
+		if (x.IsActive)
 		{
-			if (x.IsActive)
+			auto collision = CircleAndRect(newPos, x.sprite);
+			if (collision == COLLISION_NONE)
 			{
-				auto collision = CircleAndRect(newPos, x.sprite);
-				if (collision == COLLISION_NONE)
-				{
-					continue;
-				}
+				continue;
+			}
 
-				x.DecreaseHitPoints();
+			x.DecreaseHitPoints();
+			if (!x.IsActive)
+			{
+				m_LevelInfo.BricksToDestroy--;
+			}
 
-				if (collision == COLLISION_LEFT || collision == COLLISION_RIGHT)
-				{
-					flipX = true;
-				}
-				if (collision == COLLISION_TOP || collision == COLLISION_BOTTOM)
-				{
-					flipY = true;
-				}
+			if (collision == COLLISION_LEFT || collision == COLLISION_RIGHT)
+			{
+				flipX = true;
+			}
+			if (collision == COLLISION_TOP || collision == COLLISION_BOTTOM)
+			{
+				flipY = true;
 			}
 		}
+	}
 
-		if (flipX)
+
+	auto collision = CircleAndRect(newPos, m_Paddle->sprite);
+	if (collision != COLLISION_NONE)
+	{
+		if (collision == COLLISION_LEFT || collision == COLLISION_RIGHT)
 		{
-			m_Ball->SpeedX = -m_Ball->SpeedX;
+			flipX = true;
 		}
-		if (flipY)
+		if (collision == COLLISION_TOP)
 		{
-			m_Ball->SpeedY = -m_Ball->SpeedY;
+			BounceBallOffPaddle();
 		}
-		if (flipX || flipY)
-		{
-			cout << flipX << " " << flipY << endl;
-		}
-	}	
+	}
+
+	if (flipX)
+	{
+		m_Ball->SpeedX = -m_Ball->SpeedX;
+	}
+	if (flipY)
+	{
+		m_Ball->SpeedY = -m_Ball->SpeedY;
+	}
+
 
 	m_Ball->sprite.PositionX += TimeDelta * m_Ball->SpeedX;
 	m_Ball->sprite.PositionY += TimeDelta * m_Ball->SpeedY;
@@ -301,7 +382,7 @@ void SDLEngine::Render()
 
 	SDL_RenderCopy(m_Renderer, m_Textures[m_LevelInfo.BackgroundTextureIndex], nullptr, nullptr);
 
-	for (const auto &brick : m_LevelBricks)
+	for (const auto& brick : m_LevelBricks)
 	{
 		if (brick.IsActive)
 		{
@@ -324,7 +405,7 @@ void SDLEngine::Loop()
 
 	//Event handler
 	SDL_Event e;
-	
+
 	m_Timer.Start();
 
 	//While application is running
@@ -341,6 +422,18 @@ void SDLEngine::Loop()
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 				{
 					quit = true;
+				}
+
+				if (e.key.keysym.sym == SDLK_SPACE)
+				{
+					if (m_Timer.IsPaused())
+					{
+						m_Timer.Start();
+					}
+					else
+					{
+						m_Timer.Pause();
+					}
 				}
 			}
 			if (e.type == SDL_KEYUP)

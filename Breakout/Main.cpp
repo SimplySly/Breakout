@@ -1,4 +1,3 @@
-//Using SDL and standard IO
 
 #include "Main.h"   
 

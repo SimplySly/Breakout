@@ -1,6 +1,5 @@
 #include "Collision.h"
 #include "MathExtensions.h"
-#include <math.h>
 
 using namespace std;
 

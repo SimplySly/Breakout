@@ -14,21 +14,27 @@
 #include "GameTimer.h"
 #include "LevelInfo.h"
 #include "Collision.h"
+#include "MathExtensions.h"
 
 
 #pragma comment (lib, "SDL2.lib")
 #pragma comment (lib, "SDL2_image.lib")
 
 //Screen dimension constants
-#define SCREEN_WIDTH	800
-#define SCREEN_HEIGHT	600
+#define SCREEN_WIDTH			800
+#define SCREEN_HEIGHT			600
 
-#define HUD_HEIGHT		40
+#define HUD_HEIGHT				40
 
-#define PADDLE_SPEED	350.0f
-#define BALL_SPEED_X	100.0f
-#define BALL_SPEED_Y	400.0f
+#define PADDLE_SPEED			350.0f
+#define BALL_SPEED_X			0.0f
+#define BALL_SPEED_Y			400.0f
 
+#define MAX_NORMAL_ROTATION		(PI / 4.0f)
+
+
+//#define OPPOSITE_DIRECTION_VIA_EDGE
+//#define OPPOSITE_DIRECTION_VIA_SPEED
 
 class SDLEngine
 {
@@ -54,11 +60,13 @@ private:
 	//The window renderer
 	SDL_Renderer* m_Renderer;
 
-
 	GameTimer m_Timer;
 
 	void RenderSprite(const Sprite* sprite);
-	bool BallBoundaryUpdate(float ballDeltaX, float ballDeltaY);
+
+	bool BounceOppositeDirection(float distanceX, Vector2 ballDirection);
+	bool BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY);
+	void BounceBallOffPaddle();
 
 
 	int m_ScreenWidth, m_ScreenHeight;
