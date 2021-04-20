@@ -9,5 +9,7 @@ public:
 	int Score;
 	int IsActive;
 
+	void DecreaseHitPoints();
+
 	Sprite sprite;
 };

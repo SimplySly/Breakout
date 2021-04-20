@@ -10,4 +10,6 @@ enum CollisionSide
 	COLLISION_BOTTOM	= 4
 };
 
-CollisionSide CircleAndRect(Sprite circle, Sprite rect);
+CollisionSide CircleAndRect(const Sprite &circle, const Sprite &rect);
+
+bool CircleContainsDot(Sprite circle, float x, float y);

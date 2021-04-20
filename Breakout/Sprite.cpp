@@ -9,37 +9,37 @@ Sprite::Sprite(float PosX, float PosY, int Width, int Height, int TextureIndex)
 {
 }
 
-float Sprite::left()
+float Sprite::left() const
 {
 	return PositionX;
 }
 
-float Sprite::right()
+float Sprite::right() const
 {
 	return PositionX + Width;
 }
 
-float Sprite::bottom()
+float Sprite::bottom() const
 {
 	return PositionY + Height;
 }
 
-float Sprite::top()
+float Sprite::top() const
 {
 	return PositionY;
 }
 
-float Sprite::centerX()
+float Sprite::centerX() const
 {
 	return PositionX + Width / 2.0f;
 }
 
-float Sprite::centerY()
+float Sprite::centerY() const
 {
 	return PositionY + Height / 2.0f;
 }
 
-float Sprite::radius()
+float Sprite::radius() const
 {
 	return Width / 2.0f;
 }

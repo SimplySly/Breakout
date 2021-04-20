@@ -13,6 +13,7 @@
 #include "XMLLevelLoader.h"
 #include "GameTimer.h"
 #include "LevelInfo.h"
+#include "Collision.h"
 
 
 #pragma comment (lib, "SDL2.lib")
@@ -37,7 +38,6 @@ public:
 	~SDLEngine();
 
 	bool Init();
-	void RenderSprite(const Sprite *sprite);
 	bool LoadLevelObjects(std::string level);
 	void ClearLevelObjects();
 
@@ -56,6 +56,9 @@ private:
 
 
 	GameTimer m_Timer;
+
+	void RenderSprite(const Sprite* sprite);
+	bool BallBoundaryUpdate(float ballDeltaX, float ballDeltaY);
 
 
 	int m_ScreenWidth, m_ScreenHeight;

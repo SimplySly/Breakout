@@ -160,6 +160,50 @@ void SDLEngine::RenderSprite(const Sprite* sprite)
 	SDL_RenderCopy(m_Renderer, m_Textures[sprite->TextureIndex], nullptr, &renderQuad);
 }
 
+bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY)
+{
+	if (m_Ball->SpeedX > 0)
+	{
+		if (m_Ball->sprite.right() + ballDeltaX > m_PlayableScreenWidth)
+		{
+			m_Ball->SpeedX = -m_Ball->SpeedX;
+
+			return true;
+		}
+	}
+	if (m_Ball->SpeedX < 0)
+	{
+		if (m_Ball->sprite.left() + ballDeltaX < 0)
+		{
+			m_Ball->SpeedX = -m_Ball->SpeedX;
+
+			return true;
+		}
+	}
+
+	if (m_Ball->SpeedY < 0)
+	{
+		if (m_Ball->sprite.top() + ballDeltaY < 0)
+		{
+			m_Ball->SpeedY = -m_Ball->SpeedY;
+
+			return true;
+		}
+	}
+	if (m_Ball->SpeedY > 0)
+	{
+		if (m_Ball->sprite.bottom() + ballDeltaY > m_PlayableScreenHeight)
+		{
+			m_Ball->SpeedY = -m_Ball->SpeedY;
+
+			//Life Loss Respawn
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void SDLEngine::Update()
 {
 	float TimeDelta = m_Timer.GetTicks() / 1000.0f;
@@ -199,37 +243,52 @@ void SDLEngine::Update()
 	float ballDeltaX = TimeDelta * m_Ball->SpeedX;
 	float ballDeltaY = TimeDelta * m_Ball->SpeedY;
 	// boundaries
-	if (m_Ball->SpeedX > 0)
+	if (!BallBoundaryUpdate(ballDeltaX, ballDeltaY))
 	{
-		if (m_Ball->sprite.right() + ballDeltaX > m_PlayableScreenWidth)
+		Sprite newPos;
+		bool flipX = false, flipY = false;
+
+		newPos.PositionX = m_Ball->sprite.PositionX + TimeDelta * m_Ball->SpeedX;
+		newPos.PositionY = m_Ball->sprite.PositionY + TimeDelta * m_Ball->SpeedY;
+		newPos.Width = m_Ball->sprite.Width;
+		newPos.Height = m_Ball->sprite.Height;
+
+		for (auto& x : m_LevelBricks)
+		{
+			if (x.IsActive)
+			{
+				auto collision = CircleAndRect(newPos, x.sprite);
+				if (collision == COLLISION_NONE)
+				{
+					continue;
+				}
+
+				x.DecreaseHitPoints();
+
+				if (collision == COLLISION_LEFT || collision == COLLISION_RIGHT)
+				{
+					flipX = true;
+				}
+				if (collision == COLLISION_TOP || collision == COLLISION_BOTTOM)
+				{
+					flipY = true;
+				}
+			}
+		}
+
+		if (flipX)
 		{
 			m_Ball->SpeedX = -m_Ball->SpeedX;
 		}
-	}
-	if (m_Ball->SpeedX < 0)
-	{
-		if (m_Ball->sprite.left() + ballDeltaX  < 0)
-		{
-			m_Ball->SpeedX = -m_Ball->SpeedX;
-		}
-	}
-
-	if (m_Ball->SpeedY < 0)
-	{
-		if (m_Ball->sprite.top() + ballDeltaY < 0)
+		if (flipY)
 		{
 			m_Ball->SpeedY = -m_Ball->SpeedY;
 		}
-	}
-	if (m_Ball->SpeedY > 0)
-	{
-		if (m_Ball->sprite.bottom() + ballDeltaY > m_PlayableScreenHeight)
+		if (flipX || flipY)
 		{
-			m_Ball->SpeedY = -m_Ball->SpeedY;
-
-			//Life Loss Respawn
+			cout << flipX << " " << flipY << endl;
 		}
-	}
+	}	
 
 	m_Ball->sprite.PositionX += TimeDelta * m_Ball->SpeedX;
 	m_Ball->sprite.PositionY += TimeDelta * m_Ball->SpeedY;

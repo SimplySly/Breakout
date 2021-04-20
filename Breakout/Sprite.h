@@ -13,13 +13,13 @@ public:
 
 	int TextureIndex;
 
-	float left();
-	float right();
-	float bottom();
-	float top();
+	float left() const;
+	float right() const;
+	float bottom() const;
+	float top() const;
 
-	float centerX();
-	float centerY();
-	float radius();
+	float centerX() const;
+	float centerY() const;
+	float radius() const;
 };
 
