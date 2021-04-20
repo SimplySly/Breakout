@@ -15,47 +15,96 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 	if (circle.centerX() < rect.left())
 	{
 		collisionX = rect.left();
-
-		if (CircleContainsDot(circle, collisionX, collisionY))
-		{
-			return COLLISION_LEFT;
-		}
-		else
-		{
-			return COLLISION_NONE;
-		}
 	}
-
-	if (circle.centerX() > rect.right())
+	else if (circle.centerX() > rect.right())
 	{
 		collisionX = rect.right();
-
-		if (CircleContainsDot(circle, collisionX, collisionY))
-		{
-			return COLLISION_RIGHT;
-		}
-		else
-		{
-			return COLLISION_NONE;
-		}
+	}
+	else
+	{
+		collisionX = circle.centerX();
 	}
 
-	collisionX = circle.centerX();
+	collisionY = circle.centerY();
+	clamp(collisionY, rect.top(), rect.bottom());
 
 	if (CircleContainsDot(circle, collisionX, collisionY))
 	{
-		if (circle.centerY() < rect.top())
+		if (circle.centerX() < rect.left())
 		{
-			return COLLISION_TOP;
+			if (circle.centerY() < rect.top())
+			{
+				if (rect.left() - circle.centerX() < rect.top() - circle.centerY())
+				{
+					return COLLISION_TOP;
+				}
+				else
+				{
+					return COLLISION_LEFT;
+				}
+			}
+			else if (circle.centerY() > rect.top())
+			{
+				if (rect.left() - circle.centerX() < circle.centerY() - rect.top())
+				{
+					return COLLISION_BOTTOM;
+				}
+				else
+				{
+					return COLLISION_LEFT;
+				}
+			}
+			else
+			{
+				return COLLISION_LEFT;
+			}
 		}
-		else 
+		else if (circle.centerX() > rect.right())
 		{
-			return COLLISION_BOTTOM;
+			if (circle.centerY() < rect.top())
+			{
+				if (circle.centerX() - rect.right() < rect.top() - circle.centerY())
+				{
+					return COLLISION_TOP;
+				}
+				else
+				{
+					return COLLISION_RIGHT;
+				}
+			}
+			else if (circle.centerY() > rect.top())
+			{
+				if (circle.centerX() - rect.right() < circle.centerY() - rect.top())
+				{
+					return COLLISION_BOTTOM;
+				}
+				else
+				{
+					return COLLISION_RIGHT;
+				}
+			}
+			else
+			{
+				return COLLISION_RIGHT;
+			}
+		}
+		else
+		{
+			if (circle.centerY() < rect.top())
+			{
+				return COLLISION_TOP;
+			}
+			else
+			{
+				return COLLISION_BOTTOM;
+			}
 		}
 	}
 
 	return COLLISION_NONE;
 }
+
+
 
 bool CircleContainsDot(Sprite circle, float x, float y)
 {
