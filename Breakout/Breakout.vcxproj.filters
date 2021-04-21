@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Levels">
-      <UniqueIdentifier>{7da09e59-c649-452e-9707-1e7a19358d3f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -119,13 +116,5 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="Levels\Level1.xml">
-      <Filter>Source Files\Levels</Filter>
-    </Xml>
-    <Xml Include="Levels\Level0.xml">
-      <Filter>Source Files\Levels</Filter>
-    </Xml>
   </ItemGroup>
 </Project>

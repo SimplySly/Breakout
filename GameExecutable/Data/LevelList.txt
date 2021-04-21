@@ -1,4 +1,3 @@
-Levels/Level0.xml
 Levels/Pyramid.xml
 Levels/Coil.xml
 Levels/Hard.xml
