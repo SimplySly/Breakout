@@ -17,6 +17,7 @@ SDLEngine::SDLEngine()
 	m_ScreenWidth = SCREEN_WIDTH;
 	m_ScreenHeight = SCREEN_HEIGHT;
 
+	m_HudTextColor = HUD_TEXT_COLOR;
 	m_UpdateHud = false;
 
 	m_PlayableScreenWidth = m_ScreenWidth;
@@ -164,8 +165,10 @@ bool SDLEngine::InitGameState()
 	m_GameTextures.LoadTexture(WIN_TEXTURE, m_Renderer, "Win");
 	m_GameTextures.LoadTexture(LOSE_TEXTURE, m_Renderer, "Lose");
 
-	SDL_Color textColor = {0, 0, 0, 1};
-	m_GameTextures.AddFontTexture(string("Level ") + to_string(m_PlayerInfo.CurrentLevel), "LevelNumber", m_Renderer, m_Font, textColor);
+	m_GameTextures.AddFontTexture(string("LEVEL ") + to_string(m_PlayerInfo.CurrentLevel), "LevelNumber", m_Renderer, m_Font, m_HudTextColor);
+	m_GameTextures.AddFontTexture(string("LIFE ") + to_string(m_PlayerInfo.Life), "Life", m_Renderer, m_Font, m_HudTextColor);
+	m_GameTextures.AddFontTexture(string("SCORE ") + to_string(m_PlayerInfo.Life), "Score", m_Renderer, m_Font, m_HudTextColor);
+	
 
 	return true;
 }
@@ -283,6 +286,7 @@ void SDLEngine::BallDeath()
 void SDLEngine::LevelWin()
 {
 	m_PlayerInfo.CurrentLevel++;
+	m_GameTextures.UpdateFontTexture("LEVEL " + to_string(m_PlayerInfo.CurrentLevel), "LevelNumber", m_Renderer, m_Font, m_HudTextColor);
 	ClearLevelObjects();
 	if (m_PlayerInfo.CurrentLevel > m_LevelList.size())
 	{
@@ -292,7 +296,6 @@ void SDLEngine::LevelWin()
 	{
 		m_GameState = GAME_STATE_LEVEL_DISPLAY;
 	}
-
 }
 
 bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY)
@@ -601,6 +604,11 @@ void SDLEngine::RenderHUD()
 		m_UpdateHud = false;
 
 	}
+	//SDL_Rect renderRect = { m_ScreenWidth / 2 -,
+	//	m_ScreenHeight / 2 - pLevelNumberTexture.Height / 2,
+	//	pLevelNumberTexture.Height };
+	//SDL_RenderCopy(m_Renderer, pLevelNumberTexture.pTexture, nullptr, &renderRect);
+
 }
 
 void SDLEngine::RenderGame()
@@ -644,7 +652,7 @@ void SDLEngine::RenderLevelDisplay()
 
 	const Texture& pLevelNumberTexture = m_GameTextures["LevelNumber"];
 	SDL_Rect renderRect = { m_ScreenWidth / 2 - pLevelNumberTexture.Width / 2,
-		m_ScreenHeight / 2 - pLevelNumberTexture.Width / 2,
+		m_ScreenHeight / 2 - pLevelNumberTexture.Height / 2,
 		pLevelNumberTexture.Width,
 		pLevelNumberTexture.Height };
 	SDL_RenderCopy(m_Renderer, pLevelNumberTexture.pTexture, nullptr, &renderRect);

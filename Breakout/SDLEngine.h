@@ -59,6 +59,7 @@ enum GAME_STATE {
 #define LEVEL_DISPLAY_TEXTURE	"Textures/state/LevelDisplay.jpg"
 #define WIN_TEXTURE				"Textures/state/win.jpg"
 #define LOSE_TEXTURE			"Textures/state/lose.jpg"
+#define HUD_TEXT_COLOR			{255, 255, 255, 255}
 
 class SDLEngine
 {
@@ -113,6 +114,7 @@ private:
 
 
 	bool m_UpdateHud;
+	SDL_Color m_HudTextColor;
 	LevelInfo m_LevelInfo;
 	PlayerInfo m_PlayerInfo;
 	GAME_STATE m_GameState;
