@@ -284,6 +284,7 @@ void SDLEngine::BallDeath()
 {
 	m_UpdateHud = true;
 	m_PlayerInfo.Life--;
+
 	if (m_PlayerInfo.Life < 1)
 	{
 		m_GameState = GAME_STATE_LOSE;
@@ -552,7 +553,7 @@ void SDLEngine::Update()
 	{
 		m_Timer.Pause();
 
-		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
+		if (m_Input->IsKeyPressed(SDLK_SPACE) || m_Input->IsKeyPressed(SDLK_RETURN))
 		{
 			m_GameState = GAME_STATE_PLAYING;
 			m_Timer.Start();
@@ -562,7 +563,7 @@ void SDLEngine::Update()
 	}
 	if (m_GameState == GAME_STATE_LEVEL_DISPLAY)
 	{
-		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
+		if (m_Input->IsKeyPressed(SDLK_SPACE) || m_Input->IsKeyPressed(SDLK_RETURN))
 		{
 			m_GameState = GAME_STATE_PAUSE;
 			if (!LoadLevelObjects(m_LevelList[m_PlayerInfo.CurrentLevel - 1]))
@@ -577,11 +578,11 @@ void SDLEngine::Update()
 
 	if (m_GameState == GAME_STATE_LOSE)
 	{
-		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
+		if (m_Input->IsKeyPressed(SDLK_SPACE) || m_Input->IsKeyPressed(SDLK_RETURN))
 		{
 			m_GameState = GAME_STATE_LEVEL_DISPLAY;
 			m_PlayerInfo.SetToDefault();
-			SDL_Delay(100);
+			m_GameTextures.UpdateFontTexture("LEVEL " + to_string(m_PlayerInfo.CurrentLevel), "LevelNumber", m_Renderer, m_Font, m_HudTextColor);
 		}
 
 		return;
@@ -589,7 +590,7 @@ void SDLEngine::Update()
 
 	if (m_GameState == GAME_STATE_WIN)
 	{
-		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
+		if (m_Input->IsKeyPressed(SDLK_SPACE) || m_Input->IsKeyPressed(SDLK_RETURN))
 		{
 			m_GameState = GAME_STATE_QUIT;
 		}
@@ -768,5 +769,7 @@ void SDLEngine::Loop()
 
 		Update();
 		Render();
+
+		m_Input->KeyPressReset();
 	}
 }

@@ -11,7 +11,10 @@ public:
 	void KeyUp(unsigned int key);
 
 	bool IsKeyDown(unsigned int key);
+	bool IsKeyPressed(unsigned int key);
+	void KeyPressReset();
 private:
 	bool m_keys[SDL_NUM_SCANCODES];
+	bool m_keysPress[SDL_NUM_SCANCODES];
 };
 
