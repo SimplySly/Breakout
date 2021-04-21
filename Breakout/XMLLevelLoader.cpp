@@ -64,7 +64,7 @@ bool XMLLevelLoader::LoadFromXML(string path, LevelInfo& levelInfo, vector<Brick
 		auto it = find(loadedSounds.begin(), loadedSounds.end(), brick.HitSound);
 		if (it != loadedSounds.end())
 		{
-			brick.HitSoundIndex = it - loadedSounds.begin();
+			brick.HitSoundIndex = (int)(it - loadedSounds.begin());
 		}
 		else
 		{
@@ -81,7 +81,7 @@ bool XMLLevelLoader::LoadFromXML(string path, LevelInfo& levelInfo, vector<Brick
 			it = find(loadedSounds.begin(), loadedSounds.end(), brick.BreakSound);
 			if (it != loadedSounds.end())
 			{
-				brick.BreakSoundIndex = it - loadedSounds.begin();
+				brick.BreakSoundIndex = (int)(it - loadedSounds.begin());
 			}
 			else
 			{

@@ -24,7 +24,7 @@ void SoundCollection::Clear()
 
 int SoundCollection::Size()
 {
-	return m_Sounds.size();
+	return (int)m_Sounds.size();
 }
 
 bool SoundCollection::LoadSound(string path)
