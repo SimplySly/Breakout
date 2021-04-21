@@ -76,7 +76,7 @@ SDLEngine::~SDLEngine()
 bool SDLEngine::Init()
 {
 	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 	{
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 		return false;
@@ -100,6 +100,13 @@ bool SDLEngine::Init()
 	{
 		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
 
+		return false;
+	}
+
+	//Initialize SDL_mixer
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	{
+		printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 		return false;
 	}
 
@@ -198,6 +205,7 @@ void SDLEngine::ClearLevelObjects()
 	}
 
 	m_Textures.Clear();
+	m_Sounds.Clear();
 	m_LevelBricks.clear();
 }
 
@@ -225,7 +233,8 @@ bool SDLEngine::LoadLevelObjects(string levelPath)
 
 	XMLLevelLoader level;
 
-	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks, m_Textures, m_Renderer, m_PlayableScreenWidth, m_PlayableScreenHeight))
+	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks, m_Textures, 
+		m_Renderer, m_Sounds, m_PlayableScreenWidth, m_PlayableScreenHeight))
 	{
 		return false;
 	}
@@ -447,20 +456,22 @@ void SDLEngine::UpdatePlayingState()
 	newPos.Width = m_Ball->sprite.Width;
 	newPos.Height = m_Ball->sprite.Height;
 
-	for (auto& x : m_LevelBricks)
+	for (auto& brick : m_LevelBricks)
 	{
-		if (x.IsActive)
+		if (brick.IsActive)
 		{
-			auto collision = CircleAndRect(newPos, x.sprite);
+			auto collision = CircleAndRect(newPos, brick.sprite);
 			if (collision == COLLISION_NONE)
 			{
 				continue;
 			}
 
-			x.DecreaseHitPoints();
-			if (!x.IsActive)
+			Mix_PlayChannel(-1, m_Sounds[brick.HitSoundIndex], 0);
+			brick.DecreaseHitPoints();
+			if (!brick.IsActive)
 			{
-				m_PlayerInfo.Score += x.Score;
+				Mix_PlayChannel(-1, m_Sounds[brick.BreakSoundIndex], 0);
+				m_PlayerInfo.Score += brick.Score;
 				m_LevelInfo.BricksToDestroy--;
 				if (m_LevelInfo.BricksToDestroy < 1)
 				{
@@ -578,7 +589,7 @@ void SDLEngine::RenderGame()
 
 	SDL_RenderCopy(m_Renderer, m_Textures[m_LevelInfo.BackgroundTextureIndex], nullptr, nullptr);
 
-	for (const auto& brick : m_LevelBricks)
+	for (auto& brick : m_LevelBricks)
 	{
 		if (brick.IsActive)
 		{

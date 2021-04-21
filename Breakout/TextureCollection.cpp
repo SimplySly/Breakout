@@ -16,6 +16,7 @@ void TextureCollection::Clear()
 	for (size_t i = 0; i < m_Textures.size(); i++)
 	{
 		SDL_DestroyTexture(m_Textures[i]);
+		m_Textures[i] = nullptr;
 	}
 
 	m_Textures.clear();

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "Sprite.h"
 #include "Input.h"
 #include "TextureCollection.h"
@@ -16,6 +17,7 @@
 #include "Collision.h"
 #include "MathExtensions.h"
 #include "PlayerInfo.h"
+#include "SoundCollection.h"
 
 
 #pragma comment (lib, "SDL2.lib")
@@ -114,5 +116,6 @@ private:
 
 	GameObject *m_Paddle, *m_Ball;
 	TextureCollection m_Textures;
+	SoundCollection m_Sounds;
 	std::vector<Brick> m_LevelBricks;
 };

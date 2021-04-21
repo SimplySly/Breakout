@@ -17,7 +17,7 @@ XMLLevelLoader::~XMLLevelLoader()
 {
 }
 
-bool XMLLevelLoader::LoadFromXML(string path, LevelInfo& levelInfo, vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadFromXML(string path, LevelInfo& levelInfo, vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, SoundCollection &soundCollection, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLDocument doc;
 
@@ -51,12 +51,54 @@ bool XMLLevelLoader::LoadFromXML(string path, LevelInfo& levelInfo, vector<Brick
 	}
 
 	int textureBaseIndex = textureCollection.Size();
-	for (const auto& brick : m_BrickTypes)
+	int soundBaseIndex = soundCollection.Size();
+	vector<string> loadedSounds;
+
+	for (auto& brick : m_BrickTypes)
 	{
 		if (!textureCollection.LoadTexture(brick.Texture, pRenderer))
 		{
 			return false;
 		}
+
+		auto it = find(loadedSounds.begin(), loadedSounds.end(), brick.HitSound);
+		if (it != loadedSounds.end())
+		{
+			brick.HitSoundIndex = it - loadedSounds.begin();
+		}
+		else
+		{
+			brick.HitSoundIndex = (int)loadedSounds.size();
+			loadedSounds.push_back(brick.HitSound);
+			if (!soundCollection.LoadSound(brick.HitSound))
+			{
+				return false;
+			}
+		}
+
+		if (brick.BreakSound != nullptr)
+		{
+			it = find(loadedSounds.begin(), loadedSounds.end(), brick.BreakSound);
+			if (it != loadedSounds.end())
+			{
+				brick.BreakSoundIndex = it - loadedSounds.begin();
+			}
+			else
+			{
+				brick.BreakSoundIndex = (int)loadedSounds.size();
+				loadedSounds.push_back(brick.BreakSound);
+				if (!soundCollection.LoadSound(brick.BreakSound))
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			//not important but w/e
+			brick.BreakSoundIndex = 0;
+		}
+		
 	}
 
 	bool ret = LoadBrickList(levelElement, textureBaseIndex, bricks, levelInfo.BricksToDestroy, brickAreaWidth, brickAreaHeight);
@@ -193,6 +235,8 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, int textureBaseInde
 
 				brick.HitPoints = m_BrickTypes[i].HitPoints;
 				brick.Score = m_BrickTypes[i].BreakScore;
+				brick.BreakSoundIndex = m_BrickTypes[i].BreakSoundIndex;
+				brick.HitSoundIndex = m_BrickTypes[i].HitSoundIndex;
 				brick.IsActive = brick.HitPoints > 0 || brick.HitPoints == -1;
 				if (brick.HitPoints > 0)
 				{

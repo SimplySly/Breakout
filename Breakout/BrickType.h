@@ -6,7 +6,9 @@ public:
     char* Texture;
     int HitPoints;
     char* HitSound;
+    int HitSoundIndex;
     char* BreakSound;
+    int BreakSoundIndex;
     int BreakScore;
 };
 

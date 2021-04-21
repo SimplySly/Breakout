@@ -8,6 +8,8 @@ public:
 	int HitPoints;
 	int Score;
 	int IsActive;
+	int HitSoundIndex;
+	int BreakSoundIndex;
 
 	void DecreaseHitPoints();
 

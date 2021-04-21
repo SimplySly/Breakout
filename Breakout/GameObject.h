@@ -8,5 +8,7 @@ public:
 	float SpeedX;
 	float SpeedY;
 
+	int HitSoundIndex;
+
 	Sprite sprite;
 };
