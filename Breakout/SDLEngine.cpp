@@ -109,15 +109,20 @@ bool SDLEngine::Init()
 	//Get window surface
 	m_ScreenSurface = SDL_GetWindowSurface(m_Window);
 
-
-
 	m_Input = new Input();
 	if (m_Input == nullptr)
 	{
 		return false;
 	}
 	
-	InitGameState();
+	if (!InitGameState())
+	{
+		return false;
+	}
+	if (!LoadLevelList())
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -146,6 +151,14 @@ bool SDLEngine::InitGameState()
 	{
 		return false;
 	}
+
+	return true;
+}
+
+bool SDLEngine::LoadLevelList()
+{
+	m_LevelList.push_back("Levels/Level0.xml");
+	m_LevelList.push_back("Levels/Level1.xml");
 
 	return true;
 }
@@ -266,8 +279,15 @@ void SDLEngine::LevelWin()
 {
 	m_PlayerInfo.CurrentLevel++;
 	ClearLevelObjects();
+	if (m_PlayerInfo.CurrentLevel > m_LevelList.size())
+	{
+		m_GameState = GAME_STATE_WIN;
+	}
+	else
+	{
+		m_GameState = GAME_STATE_LEVEL_DISPLAY;
+	}
 
-	m_GameState = GAME_STATE_LEVEL_DISPLAY;
 }
 
 bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY)
@@ -441,6 +461,12 @@ void SDLEngine::UpdatePlayingState()
 			if (!x.IsActive)
 			{
 				m_LevelInfo.BricksToDestroy--;
+				if (m_LevelInfo.BricksToDestroy < 1)
+				{
+					LevelWin();
+
+					return;
+				}
 			}
 
 			if (collision == COLLISION_LEFT || collision == COLLISION_RIGHT)
@@ -511,7 +537,11 @@ void SDLEngine::Update()
 		if (m_Input->IsKeyDown(SDLK_SPACE) || m_Input->IsKeyDown(SDLK_RETURN))
 		{
 			m_GameState = GAME_STATE_PAUSE;
-			LoadLevelObjects("Levels/level1.xml");
+			if (!LoadLevelObjects(m_LevelList[m_PlayerInfo.CurrentLevel - 1]))
+			{
+				m_GameState = GAME_STATE_QUIT;
+				cout << "corrupted game data!" << endl;
+			}
 		}
 
 		return;
@@ -613,7 +643,7 @@ void SDLEngine::Loop()
 	SDL_Event e;
 
 	//While application is running
-	while (!quit || m_GameState == GAME_STATE_QUIT)
+	while (!quit && m_GameState != GAME_STATE_QUIT)
 	{
 		//Handle events on queue
 		while (SDL_PollEvent(&e) != 0)

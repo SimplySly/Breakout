@@ -112,5 +112,8 @@
     <Xml Include="Levels\Level1.xml">
       <Filter>Source Files\Levels</Filter>
     </Xml>
+    <Xml Include="Levels\Level0.xml">
+      <Filter>Source Files\Levels</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

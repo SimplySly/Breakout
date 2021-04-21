@@ -85,6 +85,7 @@ private:
 	GameTimer m_Timer;
 
 	bool InitGameState(); 
+	bool LoadLevelList();
 	SDL_Texture* LoadTexture(std::string path);
 
 	void RenderSprite(const Sprite* sprite);
@@ -108,6 +109,7 @@ private:
 	LevelInfo m_LevelInfo;
 	PlayerInfo m_PlayerInfo;
 	GAME_STATE m_GameState;
+	std::vector<std::string> m_LevelList;
 
 	GameObject *m_Paddle, *m_Ball;
 	TextureCollection m_Textures;
