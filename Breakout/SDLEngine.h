@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <SDL_mixer.h>
 #include "Sprite.h"
 #include "Input.h"
@@ -23,6 +24,7 @@
 #pragma comment (lib, "SDL2.lib")
 #pragma comment (lib, "SDL2_image.lib")
 #pragma comment (lib, "SDL2_mixer.lib")
+#pragma comment (lib, "SDL2_ttf.lib")
 
 //Screen dimension constants
 #define SCREEN_WIDTH			800
@@ -40,6 +42,7 @@
 
 #define MAX_NORMAL_ROTATION		(PI / 4.0f)
 
+#define DEFAULT_FONT			"Fonts/GameBoy.ttf"
 
 //#define OPPOSITE_DIRECTION_VIA_EDGE
 //#define OPPOSITE_DIRECTION_VIA_SPEED
@@ -72,21 +75,6 @@ public:
 	void Update();
 	void Render();
 private:
-	//The window we'll be rendering to
-	SDL_Window* m_Window;
-
-	//The surface contained by the window
-	SDL_Surface* m_ScreenSurface;
-
-	//The window renderer
-	SDL_Renderer* m_Renderer;
-
-	SDL_Texture* m_WinTexture;
-	SDL_Texture* m_LoseTexture;
-	SDL_Texture* m_LevelDisplayTexture;
-
-	GameTimer m_Timer;
-
 	bool InitGameState(); 
 	bool LoadLevelList();
 	SDL_Texture* LoadTexture(std::string path);
@@ -102,20 +90,37 @@ private:
 	void BallDeath();
 	void LevelWin();
 
-	void RenderGame();
+	void RenderGame(); 
+	void RenderHUD(); 
+	void RenderLevelDisplay();
 	void RenderTexture(SDL_Texture* pTexture);
+
+	//The window we'll be rendering to
+	SDL_Window* m_Window;
+
+	//The surface contained by the window
+	SDL_Surface* m_ScreenSurface;
+
+	//The window renderer
+	SDL_Renderer* m_Renderer;
+
+	TTF_Font* m_Font;
 
 	int m_ScreenWidth, m_ScreenHeight;
 	int m_PlayableScreenWidth, m_PlayableScreenHeight;
 	Input *m_Input;
+	GameTimer m_Timer;
 
+
+	bool m_UpdateHud;
 	LevelInfo m_LevelInfo;
 	PlayerInfo m_PlayerInfo;
 	GAME_STATE m_GameState;
 	std::vector<std::string> m_LevelList;
 
 	GameObject *m_Paddle, *m_Ball;
-	TextureCollection m_Textures;
+	TextureCollection m_LevelTextures;
+	TextureCollection m_GameTextures;
 	SoundCollection m_Sounds;
 	std::vector<Brick> m_LevelBricks;
 };

@@ -11,14 +11,35 @@ TextureCollection::~TextureCollection()
 	Clear();
 }
 
-void TextureCollection::Clear()
+int TextureCollection::GetIndex(string name)
 {
-	for (size_t i = 0; i < m_Textures.size(); i++)
+	auto it = find_if(m_Textures.begin(), m_Textures.end(), [name](const Texture& v) {return v.Name == name; });
+	if (it != m_Textures.end())
 	{
-		SDL_DestroyTexture(m_Textures[i]);
-		m_Textures[i] = nullptr;
+		return (int)(it - m_Textures.begin());
 	}
 
+	return -1;
+}
+
+Texture TextureCollection::operator [] (std::string name)
+{
+	int index = GetIndex(name);
+	if (index != -1)
+	{
+		return m_Textures[index];
+	}
+
+	return Texture();
+}
+
+
+void TextureCollection::Clear()
+{
+	for (auto &x : m_Textures)
+	{
+		x.Free();
+	}
 	m_Textures.clear();
 }
 
@@ -27,27 +48,59 @@ int TextureCollection::Size()
 	return (int)m_Textures.size();
 }
 
-bool TextureCollection::LoadTexture(string path, SDL_Renderer* pRenderer)
+bool TextureCollection::LoadTexture(string path, SDL_Renderer* pRenderer, const char* name)
 {
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == nullptr)
+	Texture texture;
+
+
+	if (name == nullptr)
 	{
-		printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
-		return false;
+		if (!texture.LoadTextureFromFile(path, path, pRenderer))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (!texture.LoadTextureFromFile(path, name, pRenderer))
+		{
+			return false;
+		}
 	}
 
-	//Create texture from surface pixels
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(pRenderer, loadedSurface);
-	if (texture == nullptr)
-	{
-		printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
-		return false;
-	}
-
-	//Get rid of old loaded surface
-	SDL_FreeSurface(loadedSurface);
 	m_Textures.push_back(texture);
+
+	return true;
+}
+
+
+bool TextureCollection::AddFontTexture(string text, string name, SDL_Renderer* pRenderer, TTF_Font *pFont, SDL_Color textColor)
+{
+	Texture texture;
+	
+	if (!texture.CreateFontTexture(text, name, pRenderer, pFont, textColor))
+	{
+		return false;
+	}
+
+	m_Textures.push_back(texture);
+
+	return true;
+}
+
+bool TextureCollection::UpdateFontTexture(string text, string name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor)
+{
+	int index = GetIndex(name);
+
+	if (index == -1)
+	{
+		return false;
+	}
+
+	if (m_Textures[index].CreateFontTexture(text, name, pRenderer, pFont, textColor))
+	{
+		return false;
+	}
 
 	return true;
 }

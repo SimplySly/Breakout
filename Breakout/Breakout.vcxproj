@@ -80,13 +80,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>..\SDL2_mixer-2.0.4\lib\x64;..\tinyxml2\x64-Release-Dll;..\SDL2_image-2.0.5\lib\x64;..\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\SDL2_mixer-2.0.4\include;..\tinyxml2\include;..\SDL2_image-2.0.5\include;..\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\SDL2_ttf-2.0.15\lib\x64;..\SDL2_mixer-2.0.4\lib\x64;..\tinyxml2\x64-Release-Dll;..\SDL2_image-2.0.5\lib\x64;..\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\SDL2_ttf-2.0.15\include;..\SDL2_mixer-2.0.4\include;..\tinyxml2\include;..\SDL2_image-2.0.5\include;..\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\SDL2_mixer-2.0.4\include;..\tinyxml2\include;..\SDL2_image-2.0.5\include;..\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\SDL2_mixer-2.0.4\lib\x64;..\tinyxml2\x64-Release-Dll;..\SDL2_image-2.0.5\lib\x64;..\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\SDL2_ttf-2.0.15\include;..\SDL2_mixer-2.0.4\include;..\tinyxml2\include;..\SDL2_image-2.0.5\include;..\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\SDL2_ttf-2.0.15\lib\x64;..\SDL2_mixer-2.0.4\lib\x64;..\tinyxml2\x64-Release-Dll;..\SDL2_image-2.0.5\lib\x64;..\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -157,6 +157,7 @@
     <ClCompile Include="MathExtensions.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="SoundCollection.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="XMLLevelLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SDLEngine.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="SoundCollection.h" />
     <ClInclude Include="StdStringExtensions.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="XMLLevelLoader.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="SDLEngine.h" />
