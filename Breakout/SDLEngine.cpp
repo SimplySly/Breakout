@@ -460,6 +460,7 @@ void SDLEngine::UpdatePlayingState()
 			x.DecreaseHitPoints();
 			if (!x.IsActive)
 			{
+				m_PlayerInfo.Score += x.Score;
 				m_LevelInfo.BricksToDestroy--;
 				if (m_LevelInfo.BricksToDestroy < 1)
 				{

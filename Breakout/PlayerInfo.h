@@ -6,6 +6,7 @@ class PlayerInfo
 public:
 	int Life;
 	int CurrentLevel;
+	int Score;
 
 	void SetToDefault();
 };
