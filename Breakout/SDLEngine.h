@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <SDL_image.h>
@@ -43,9 +44,18 @@
 #define MAX_NORMAL_ROTATION		(PI / 4.0f)
 
 #define DEFAULT_FONT			"Fonts/GameBoy.ttf"
+#define LEVEL_LIST_FILE			"Data/LevelList.txt"
 
-//#define OPPOSITE_DIRECTION_VIA_EDGE
-//#define OPPOSITE_DIRECTION_VIA_SPEED
+#define LEVEL_DISPLAY_TEXTURE	"Textures/state/LevelDisplay.jpg"
+#define WIN_TEXTURE				"Textures/state/win.jpg"
+#define LOSE_TEXTURE			"Textures/state/lose.jpg"
+#define HUD_TEXT_COLOR			{255, 255, 255, 255}
+
+//ball will bounce off paddle in opposite direction if it hits edge of paddle
+//#define OPPOSITE_DIRECTION_VIA_EDGE	
+
+//if paddle and ball have speed in contra directions on X axis, ball will bounce off paddle in opposite direction
+//#define OPPOSITE_DIRECTION_VIA_SPEED	 
 
 enum GAME_STATE {
 	GAME_STATE_LEVEL_DISPLAY = 0,
@@ -56,10 +66,6 @@ enum GAME_STATE {
 	GAME_STATE_QUIT
 };
 
-#define LEVEL_DISPLAY_TEXTURE	"Textures/state/LevelDisplay.jpg"
-#define WIN_TEXTURE				"Textures/state/win.jpg"
-#define LOSE_TEXTURE			"Textures/state/lose.jpg"
-#define HUD_TEXT_COLOR			{255, 255, 255, 255}
 
 class SDLEngine
 {

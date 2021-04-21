@@ -37,23 +37,8 @@ BackgroundTexture="Textures/Boards/space.jpg">
     HitSound="Sounds/brick_hard_hit.wav" />
   </BrickTypes>
   <Bricks>
-    S S S S _ S S S _ S _ S S S S _ S S S S
-    S S S S M _ _ _ M S M _ _ _ _ M S S S S
-    S S S S S _ _ _ _ _ _ _ _ _ _ S S S S S
-    S S S S S _ _ _ _ _ _ _ _ _ _ S S S S S
-    S S S S S _ _ _ _ _ _ _ _ _ _ S S S S S
-    S S S S S _ _ _ _ _ _ _ _ _ _ S S S S S
-    S S S S S _ _ _ _ S _ _ _ _ _ S S S S S
-    S S S S S _ _ _ _ S _ _ _ _ _ S S S S S
-    S S S _ S _ _ _ _ S _ _ _ _ _ S _ S S S
-    S S S _ S _ _ _ _ S _ _ _ _ _ S _ S S S
-    S S _ _ S _ _ _ _ S _ _ _ _ _ S _ _ S S
-    S S _ _ S _ _ _ _ S _ _ _ _ _ S _ _ S S
-    S _ _ _ S _ _ _ _ S _ _ _ _ _ S _ _ _ S
-    S S _ _ S _ _ _ _ _ _ _ _ _ _ S _ _ S S
-    S S S _ S _ _ _ _ _ _ _ _ _ _ S _ S S S
-    S S S _ S _ _ _ _ _ _ _ _ _ _ S _ S S S
-    S S S S S _ _ _ _ _ _ _ _ _ _ S S S S S
-   
+    H H H H H H H H H H H H H H H H H H H H
+    M M I I M M M M M M M M M M M M I I M M
+    S _ S S S S S S S S S S S S S S S S _ S
   </Bricks>
 </Level>

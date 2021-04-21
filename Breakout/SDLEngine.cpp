@@ -166,8 +166,9 @@ bool SDLEngine::InitGameState()
 	m_GameTextures.LoadTexture(LOSE_TEXTURE, m_Renderer, "Lose");
 
 	m_GameTextures.AddFontTexture(string("LEVEL ") + to_string(m_PlayerInfo.CurrentLevel), "LevelNumber", m_Renderer, m_Font, m_HudTextColor);
-	m_GameTextures.AddFontTexture(string("LIFE ") + to_string(m_PlayerInfo.Life), "Life", m_Renderer, m_Font, m_HudTextColor);
-	m_GameTextures.AddFontTexture(string("SCORE ") + to_string(m_PlayerInfo.Life), "Score", m_Renderer, m_Font, m_HudTextColor);
+	m_GameTextures.AddFontTexture(string("LIFE: ") + to_string(m_PlayerInfo.Life), "Life", m_Renderer, m_Font, m_HudTextColor);
+	m_GameTextures.AddFontTexture(string("SCORE: ") + to_string(m_PlayerInfo.Score), "Score", m_Renderer, m_Font, m_HudTextColor);
+	m_GameTextures.AddFontTexture("Press SPACE to start", "StartMsg", m_Renderer, m_Font, m_HudTextColor);
 	
 
 	return true;
@@ -175,8 +176,21 @@ bool SDLEngine::InitGameState()
 
 bool SDLEngine::LoadLevelList()
 {
-	m_LevelList.push_back("Levels/Level0.xml");
-	m_LevelList.push_back("Levels/Level1.xml");
+	fstream file;
+	string buffer;
+
+	file.open(LEVEL_LIST_FILE, ios::in);
+
+	if (!file.is_open())
+	{
+		return false;
+	}
+
+	while (getline(file, buffer))
+	{
+		m_LevelList.push_back(buffer);
+	}
+
 
 	return true;
 }
@@ -603,12 +617,18 @@ void SDLEngine::RenderHUD()
 	{
 		m_UpdateHud = false;
 
+		m_GameTextures.UpdateFontTexture(string("LIFE: ") + to_string(m_PlayerInfo.Life), "Life", m_Renderer, m_Font, m_HudTextColor);
+		m_GameTextures.UpdateFontTexture(string("SCORE: ") + to_string(m_PlayerInfo.Score), "Score", m_Renderer, m_Font, m_HudTextColor);
 	}
-	//SDL_Rect renderRect = { m_ScreenWidth / 2 -,
-	//	m_ScreenHeight / 2 - pLevelNumberTexture.Height / 2,
-	//	pLevelNumberTexture.Height };
-	//SDL_RenderCopy(m_Renderer, pLevelNumberTexture.pTexture, nullptr, &renderRect);
 
+	const Texture& pLifeTexture = m_GameTextures["Life"];
+	SDL_Rect lifeRenderRect = { 0, m_ScreenHeight - HUD_HEIGHT, pLifeTexture.Width, HUD_HEIGHT };
+	SDL_RenderCopy(m_Renderer, pLifeTexture.pTexture, nullptr, &lifeRenderRect);
+
+
+	const Texture& pScoreTexture = m_GameTextures["Score"];
+	SDL_Rect scoreRenderRect = { m_ScreenWidth - pScoreTexture.Width, m_ScreenHeight - HUD_HEIGHT, pScoreTexture.Width, HUD_HEIGHT };
+	SDL_RenderCopy(m_Renderer, pScoreTexture.pTexture, nullptr, &scoreRenderRect);
 }
 
 void SDLEngine::RenderGame()
@@ -629,6 +649,18 @@ void SDLEngine::RenderGame()
 	RenderSprite(&m_Paddle->sprite);
 
 	RenderSprite(&m_Ball->sprite);
+
+	RenderHUD();
+
+	if (m_Timer.IsPaused())
+	{
+		const Texture& pStartMsgTexture = m_GameTextures["StartMsg"];
+		SDL_Rect renderRect = { m_ScreenWidth / 2 - pStartMsgTexture.Width / 2,
+			m_ScreenHeight / 2 - pStartMsgTexture.Height / 2,
+			pStartMsgTexture.Width,
+			pStartMsgTexture.Height };
+		SDL_RenderCopy(m_Renderer, pStartMsgTexture.pTexture, nullptr, &renderRect);
+	}
 
 	//Update screen
 	SDL_RenderPresent(m_Renderer);
@@ -651,11 +683,18 @@ void SDLEngine::RenderLevelDisplay()
 	SDL_RenderCopy(m_Renderer, m_GameTextures["LevelDisplay"].pTexture, nullptr, nullptr);
 
 	const Texture& pLevelNumberTexture = m_GameTextures["LevelNumber"];
-	SDL_Rect renderRect = { m_ScreenWidth / 2 - pLevelNumberTexture.Width / 2,
+	SDL_Rect pLvlenderRect = { m_ScreenWidth / 2 - pLevelNumberTexture.Width / 2,
 		m_ScreenHeight / 2 - pLevelNumberTexture.Height / 2,
 		pLevelNumberTexture.Width,
 		pLevelNumberTexture.Height };
-	SDL_RenderCopy(m_Renderer, pLevelNumberTexture.pTexture, nullptr, &renderRect);
+	SDL_RenderCopy(m_Renderer, pLevelNumberTexture.pTexture, nullptr, &pLvlenderRect);
+
+	const Texture& pStartMsgTexture = m_GameTextures["StartMsg"];
+	SDL_Rect renderRect = { m_ScreenWidth / 2 - pStartMsgTexture.Width / 2,
+		4 * m_ScreenHeight / 5 - pStartMsgTexture.Height / 2,
+		pStartMsgTexture.Width,
+		pStartMsgTexture.Height };
+	SDL_RenderCopy(m_Renderer, pStartMsgTexture.pTexture, nullptr, &renderRect);
 
 	//Update screen
 	SDL_RenderPresent(m_Renderer);
