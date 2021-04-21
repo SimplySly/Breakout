@@ -20,6 +20,7 @@
 
 #pragma comment (lib, "SDL2.lib")
 #pragma comment (lib, "SDL2_image.lib")
+#pragma comment (lib, "SDL2_mixer.lib")
 
 //Screen dimension constants
 #define SCREEN_WIDTH			800
@@ -51,8 +52,8 @@ enum GAME_STATE {
 };
 
 #define LEVEL_DISPLAY_TEXTURE	"Textures/state/LevelDisplay.jpg"
-#define WIN_TEXTURE		"Textures/state/win.jpg"
-#define LOSE_TEXTURE		"Textures/state/lose.jpg"
+#define WIN_TEXTURE				"Textures/state/win.jpg"
+#define LOSE_TEXTURE			"Textures/state/lose.jpg"
 
 class SDLEngine
 {
