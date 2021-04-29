@@ -17,7 +17,7 @@ XMLLevelLoader::~XMLLevelLoader()
 {
 }
 
-bool XMLLevelLoader::LoadFromXML(string path, LevelInfo& levelInfo, vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, SoundCollection &soundCollection, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, SoundCollection &soundCollection, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLDocument doc;
 

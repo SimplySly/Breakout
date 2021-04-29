@@ -27,7 +27,7 @@ int SoundCollection::Size()
 	return (int)m_Sounds.size();
 }
 
-bool SoundCollection::LoadSound(string path)
+bool SoundCollection::LoadSound(const string& path)
 {
 	Mix_Chunk* pSound = Mix_LoadWAV(path.c_str());
 

@@ -24,12 +24,12 @@ void Input::KeyUp(unsigned int key)
 	m_keys[(unsigned short)key] = false;
 }
 
-bool Input::IsKeyDown(unsigned int key)
+bool Input::IsKeyDown(unsigned int key) const
 {
 	return m_keys[(unsigned short)key];
 }
 
-bool Input::IsKeyPressed(unsigned int key)
+bool Input::IsKeyPressed(unsigned int key) const
 {
 	return m_keysPress[(unsigned short)key];
 }

@@ -9,9 +9,27 @@ Texture::Texture()
 	Height = 0;
 }
 
+Texture::Texture(const Texture& other)
+{
+	Width = other.Width;
+	Height = other.Height;
+	Name = other.Name;
+	pTexture = other.pTexture;
+}
+
 Texture::~Texture()
 {
 
+}
+
+int Texture::GetWidth() const
+{
+	return Width;
+}
+
+int Texture::GetHeight() const
+{
+	return Height;
 }
 
 void Texture::Free()
@@ -20,7 +38,7 @@ void Texture::Free()
 	pTexture = nullptr;
 }
 
-bool Texture::LoadTextureFromFile(string path, string name, SDL_Renderer* pRenderer)
+bool Texture::LoadTextureFromFile(const string& path, const string& name, SDL_Renderer* pRenderer)
 {
 	//Free if something existed
 	Free();
@@ -52,7 +70,7 @@ bool Texture::LoadTextureFromFile(string path, string name, SDL_Renderer* pRende
 	return true;
 }
 
-bool Texture::CreateFontTexture(string text, string name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor)
+bool Texture::CreateFontTexture(const string& text, const string& name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor)
 {
 	//Free if something existed
 	Free();

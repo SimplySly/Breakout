@@ -105,7 +105,7 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 
 
 
-bool CircleContainsDot(Sprite circle, float x, float y)
+bool CircleContainsDot(const Sprite &circle, float x, float y)
 {
 	return square(circle.centerX() - x) + square(circle.centerY() - y) < square(circle.radius());
 }

@@ -10,7 +10,7 @@ public:
 	void Start();
 	unsigned int GetTicks();
 	void Pause();
-	bool IsPaused();
+	bool IsPaused() const;
 private:
 	int m_CurrentTicks;
 	bool m_Paused;

@@ -11,7 +11,7 @@ TextureCollection::~TextureCollection()
 	Clear();
 }
 
-int TextureCollection::GetIndex(string name)
+int TextureCollection::GetIndex(const string& name)
 {
 	auto it = find_if(m_Textures.begin(), m_Textures.end(), [name](const Texture& v) {return v.Name == name; });
 	if (it != m_Textures.end())
@@ -22,7 +22,7 @@ int TextureCollection::GetIndex(string name)
 	return -1;
 }
 
-Texture TextureCollection::operator [] (std::string name)
+Texture TextureCollection::operator [] (const string& name)
 {
 	int index = GetIndex(name);
 	if (index != -1)
@@ -48,7 +48,7 @@ int TextureCollection::Size()
 	return (int)m_Textures.size();
 }
 
-bool TextureCollection::LoadTexture(string path, SDL_Renderer* pRenderer, const char* name)
+bool TextureCollection::LoadTexture(const string& path, SDL_Renderer* pRenderer, const char* name)
 {
 	Texture texture;
 
@@ -74,7 +74,7 @@ bool TextureCollection::LoadTexture(string path, SDL_Renderer* pRenderer, const 
 }
 
 
-bool TextureCollection::AddFontTexture(string text, string name, SDL_Renderer* pRenderer, TTF_Font *pFont, SDL_Color textColor)
+bool TextureCollection::AddFontTexture(const string& text, const string& name, SDL_Renderer* pRenderer, TTF_Font *pFont, SDL_Color textColor)
 {
 	Texture texture;
 	
@@ -88,7 +88,7 @@ bool TextureCollection::AddFontTexture(string text, string name, SDL_Renderer* p
 	return true;
 }
 
-bool TextureCollection::UpdateFontTexture(string text, string name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor)
+bool TextureCollection::UpdateFontTexture(const string& text, const string& name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor)
 {
 	int index = GetIndex(name);
 
@@ -97,7 +97,7 @@ bool TextureCollection::UpdateFontTexture(string text, string name, SDL_Renderer
 		return false;
 	}
 
-	if (m_Textures[index].CreateFontTexture(text, name, pRenderer, pFont, textColor))
+	if (!m_Textures[index].CreateFontTexture(text, name, pRenderer, pFont, textColor))
 	{
 		return false;
 	}

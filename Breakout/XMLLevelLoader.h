@@ -17,7 +17,7 @@ class XMLLevelLoader
 public: 
 	XMLLevelLoader();
 	~XMLLevelLoader();
-	bool LoadFromXML(std::string path, LevelInfo &levelInfo, std::vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, SoundCollection& soundCollection, int brickAreaWidth, int brickAreaHeight);
+	bool LoadFromXML(const std::string& path, LevelInfo &levelInfo, std::vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, SoundCollection& soundCollection, int brickAreaWidth, int brickAreaHeight);
 
 
 private:

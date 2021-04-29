@@ -12,4 +12,4 @@ enum CollisionSide
 
 CollisionSide CircleAndRect(const Sprite &circle, const Sprite &rect);
 
-bool CircleContainsDot(Sprite circle, float x, float y);
+bool CircleContainsDot(const Sprite &circle, float x, float y);

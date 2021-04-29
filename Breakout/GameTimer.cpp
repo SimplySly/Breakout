@@ -35,7 +35,7 @@ void GameTimer::Pause()
 	m_Paused = true;
 }
 
-bool GameTimer::IsPaused()
+bool GameTimer::IsPaused() const
 {
 	return m_Paused;
 }

@@ -19,7 +19,7 @@ public:
 	void Clear();
 	int Size();
 
-	bool LoadSound(std::string path);
+	bool LoadSound(const std::string& path);
 
 private:
 	std::vector<Mix_Chunk*> m_Sounds;

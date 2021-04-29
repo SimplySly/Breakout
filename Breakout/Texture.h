@@ -9,17 +9,22 @@ class Texture
 {
 public:
 	Texture();
+	Texture(const Texture &other);
 	~Texture();
 
 	SDL_Texture* pTexture;
 	std::string Name;
 
-	int Width;
-	int Height;
+	int GetWidth() const;
+	int GetHeight() const;
 
 	void Free();
-	bool CreateFontTexture(std::string text, std::string name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor);
-	bool LoadTextureFromFile(std::string path, std::string name, SDL_Renderer* pRenderer);
+	bool CreateFontTexture(const std::string& text, const std::string& name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor);
+	bool LoadTextureFromFile(const std::string& path, const std::string& name, SDL_Renderer* pRenderer);
+
+private:
+	int Width;
+	int Height;
 };
 
 

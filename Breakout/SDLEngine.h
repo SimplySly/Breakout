@@ -75,20 +75,17 @@ public:
 	~SDLEngine();
 
 	bool Init();
-	bool LoadLevelObjects(std::string level);
-	void ClearLevelObjects();
 
 	void Loop();
-	void Update();
-	void Render();
 private:
+	bool LoadLevelObjects(const std::string& level);
+	void ClearLevelObjects();
 	bool InitGameState(); 
 	bool LoadLevelList();
-	SDL_Texture* LoadTexture(std::string path);
 
 	void RenderSprite(const Sprite* sprite);
 
-	bool BounceOppositeDirection(float distanceX, Vector2 ballDirection);
+	bool BounceOppositeDirection(float distanceX, const Vector2& ballDirection);
 	bool BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY);
 	void BounceBallOffPaddle();
 	void UpdatePlayingState();
@@ -101,6 +98,8 @@ private:
 	void RenderHUD(); 
 	void RenderLevelDisplay();
 	void RenderTexture(SDL_Texture* pTexture);
+	void Update();
+	void Render();
 
 	//The window we'll be rendering to
 	SDL_Window* m_Window;

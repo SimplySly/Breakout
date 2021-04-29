@@ -7,7 +7,7 @@ class Brick
 public:
 	int HitPoints;
 	int Score;
-	int IsActive;
+	bool IsActive;
 	int HitSoundIndex;
 	int BreakSoundIndex;
 
