@@ -2,6 +2,11 @@
 
 Sprite::Sprite()
 {
+	PositionX = 0;
+	PositionY = 0;
+	Width = 0;
+	Height = 0;
+	TextureIndex = 0;
 }
 
 Sprite::Sprite(float PosX, float PosY, int Width, int Height, int TextureIndex) 

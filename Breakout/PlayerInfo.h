@@ -4,6 +4,8 @@
 class PlayerInfo
 {
 public:
+	PlayerInfo();
+
 	int Life;
 	int CurrentLevel;
 	int Score;

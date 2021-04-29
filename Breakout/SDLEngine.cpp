@@ -22,6 +22,8 @@ SDLEngine::SDLEngine()
 
 	m_PlayableScreenWidth = m_ScreenWidth;
 	m_PlayableScreenHeight = m_ScreenHeight - HUD_HEIGHT;
+
+	m_GameState = GAME_STATE_PAUSE;
 }
 
 SDLEngine::SDLEngine(int ScreenWidth, int ScreenHeight) : SDLEngine()

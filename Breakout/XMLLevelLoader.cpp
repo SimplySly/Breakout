@@ -7,6 +7,11 @@ using namespace tinyxml2;
 
 XMLLevelLoader::XMLLevelLoader()
 {
+	m_RowCount = 0;
+	m_ColumnCount = 0;
+	m_RowSpacing = 0;
+	m_ColumnSpacing = 0;
+
 	m_BackgroundTexture = nullptr;
 
 	m_BrickSizeX = 9;
