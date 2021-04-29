@@ -14,6 +14,7 @@ Texture::Texture(const Texture& other)
 	Width = other.Width;
 	Height = other.Height;
 	Name = other.Name;
+	//needs fix with smart ptr
 	pTexture = other.pTexture;
 }
 
