@@ -1,5 +1,5 @@
 #pragma once
-class BrickType
+struct BrickType
 {
 public:
     char* Id;

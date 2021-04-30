@@ -9,6 +9,7 @@
 #include "TextureCollection.h"
 #include "LevelInfo.h"
 #include "SoundCollection.h"
+#include "XMLLevelContext.h"
 
 #pragma comment(lib, "tinyxml2.lib")
 
@@ -21,20 +22,9 @@ public:
 
 
 private:
+	bool LoadLevelAttributes(tinyxml2::XMLElement* levelElement, XMLLevelContext& levelContext);
 	bool LoadBrickTypes(tinyxml2::XMLElement* levelElement);
-	bool LoadLevelAttributes(tinyxml2::XMLElement* levelElement);
-	bool LoadBrickList(tinyxml2::XMLElement* levelElement, int textureBaseIndex, std::vector<Brick> &bricks, int &BricksToDestroy, int brickAreaWidth, int brickAreaHeight);
-
-	int m_RowCount;
-	int m_ColumnCount;
-	int m_RowSpacing;
-	int m_ColumnSpacing;
-	char* m_BackgroundTexture;
-
-
-	int m_BrickSizeX;
-	int m_BrickSizeY;
-
+	bool LoadBrickList(tinyxml2::XMLElement* levelElement, const XMLLevelContext& levelContext, int textureBaseIndex, std::vector<Brick> &bricks, int &BricksToDestroy, int brickAreaWidth, int brickAreaHeight);
 
 	std::vector<BrickType> m_BrickTypes;
 };

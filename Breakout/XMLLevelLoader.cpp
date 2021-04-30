@@ -1,21 +1,14 @@
 #include "XMLLevelLoader.h"
 #include "StdStringExtensions.h"
 #include <sstream>
+#include "XMLLevelContext.h"
 
 using namespace std;
 using namespace tinyxml2;
 
 XMLLevelLoader::XMLLevelLoader()
 {
-	m_RowCount = 0;
-	m_ColumnCount = 0;
-	m_RowSpacing = 0;
-	m_ColumnSpacing = 0;
-
-	m_BackgroundTexture = nullptr;
-
-	m_BrickSizeX = 9;
-	m_BrickSizeY = 3;
+	
 }
 
 XMLLevelLoader::~XMLLevelLoader()
@@ -25,6 +18,10 @@ XMLLevelLoader::~XMLLevelLoader()
 bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, SoundCollection &soundCollection, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLDocument doc;
+	XMLLevelContext levelContext = { 0 };
+
+	levelContext.BrickSizeX = 9;
+	levelContext.BrickSizeY = 3;
 
 	doc.LoadFile(path.c_str());
 
@@ -39,13 +36,13 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vecto
 		return false;
 	}
 
-	if (!LoadLevelAttributes(levelElement))
+	if (!LoadLevelAttributes(levelElement, levelContext))
 	{
 		return false;
 	}
 
 	levelInfo.BackgroundTextureIndex = textureCollection.Size();
-	if (!textureCollection.LoadTexture(m_BackgroundTexture, pRenderer))
+	if (!textureCollection.LoadTexture(levelContext.BackgroundTexture, pRenderer))
 	{
 		return false;
 	}
@@ -106,7 +103,7 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vecto
 		
 	}
 
-	bool ret = LoadBrickList(levelElement, textureBaseIndex, bricks, levelInfo.BricksToDestroy, brickAreaWidth, brickAreaHeight);
+	bool ret = LoadBrickList(levelElement, levelContext, textureBaseIndex, bricks, levelInfo.BricksToDestroy, brickAreaWidth, brickAreaHeight);
 	if (!ret)
 	{
 		return false;
@@ -115,25 +112,25 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vecto
 	return true;
 }
 
-bool XMLLevelLoader::LoadLevelAttributes(XMLElement* levelElement)
+bool XMLLevelLoader::LoadLevelAttributes(XMLElement* levelElement, XMLLevelContext& levelContext)
 {
-	if (levelElement->QueryIntAttribute("RowCount", &m_RowCount) != XML_SUCCESS)
+	if (levelElement->QueryIntAttribute("RowCount", &levelContext.RowCount) != XML_SUCCESS)
 	{
 		return false;
 	}
-	if (levelElement->QueryIntAttribute("ColumnCount", &m_ColumnCount) != XML_SUCCESS)
+	if (levelElement->QueryIntAttribute("ColumnCount", &levelContext.ColumnCount) != XML_SUCCESS)
 	{
 		return false;
 	}
-	if (levelElement->QueryIntAttribute("RowSpacing", &m_RowSpacing) != XML_SUCCESS)
+	if (levelElement->QueryIntAttribute("RowSpacing", &levelContext.RowSpacing) != XML_SUCCESS)
 	{
 		return false;
 	}
-	if (levelElement->QueryIntAttribute("ColumnSpacing", &m_ColumnSpacing) != XML_SUCCESS)
+	if (levelElement->QueryIntAttribute("ColumnSpacing", &levelContext.ColumnSpacing) != XML_SUCCESS)
 	{
 		return false;
 	}
-	if (levelElement->QueryStringAttribute("BackgroundTexture", (const char**)&m_BackgroundTexture) != XML_SUCCESS)
+	if (levelElement->QueryStringAttribute("BackgroundTexture", (const char**)&levelContext.BackgroundTexture) != XML_SUCCESS)
 	{
 		return false;
 	}
@@ -200,7 +197,7 @@ bool XMLLevelLoader::LoadBrickTypes(XMLElement* levelElement)
 	return true;
 }
 
-bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, int textureBaseIndex, std::vector<Brick>& bricks, int& BricksToDestroy, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelContext& levelContext, int textureBaseIndex, std::vector<Brick>& bricks, int& BricksToDestroy, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLElement* brickList = levelElement->FirstChildElement("Bricks");
 	if (brickList == nullptr)
@@ -213,8 +210,8 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, int textureBaseInde
 		return false;
 	}
 	
-	float spaceUnitX = (float)brickAreaWidth / (m_ColumnCount * m_BrickSizeX + (m_ColumnCount - 1) * m_ColumnSpacing);
-	float spaceUnitY = (float)brickAreaHeight / (m_RowCount * m_BrickSizeY + (m_RowCount - 1) * m_RowSpacing);
+	float spaceUnitX = (float)brickAreaWidth / (levelContext.ColumnCount * levelContext.BrickSizeX + (levelContext.ColumnCount - 1) * levelContext.ColumnSpacing);
+	float spaceUnitY = (float)brickAreaHeight / (levelContext.RowCount * levelContext.BrickSizeY + (levelContext.RowCount - 1) * levelContext.RowSpacing);
 	
 	const char* brickListString = textNode->Value();
 
@@ -248,10 +245,10 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, int textureBaseInde
 					BricksToDestroy++;
 				}
 
-				brick.sprite = Sprite(columnIndex * m_BrickSizeX * spaceUnitX + columnIndex * m_ColumnSpacing * spaceUnitX,
-					rowIndex * m_BrickSizeY * spaceUnitY + rowIndex * m_RowSpacing * spaceUnitY,
-					(int)(m_BrickSizeX * spaceUnitX),
-					(int)(m_BrickSizeY * spaceUnitY),
+				brick.sprite = Sprite(columnIndex * levelContext.BrickSizeX * spaceUnitX + columnIndex * levelContext.ColumnSpacing * spaceUnitX,
+					rowIndex * levelContext.BrickSizeY * spaceUnitY + rowIndex * levelContext.RowSpacing * spaceUnitY,
+					(int)(levelContext.BrickSizeX * spaceUnitX),
+					(int)(levelContext.BrickSizeY * spaceUnitY),
 					textureBaseIndex + (int)i);
 
 				bricks.push_back(brick);
@@ -265,11 +262,11 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, int textureBaseInde
 		}
 
 		columnIndex++;
-		if (columnIndex >= m_ColumnCount)
+		if (columnIndex >= levelContext.ColumnCount)
 		{
 			columnIndex = 0;
 			rowIndex++;
-			if (rowIndex >= m_RowCount)
+			if (rowIndex >= levelContext.RowCount)
 			{
 				//don't read more than specified row count
 				return true;

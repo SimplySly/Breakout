@@ -158,6 +158,7 @@
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="SoundCollection.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="XMLLevelContext.cpp" />
     <ClCompile Include="XMLLevelLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SDLEngine.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="SoundCollection.h" />
     <ClInclude Include="StdStringExtensions.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="XMLLevelContext.h" />
     <ClInclude Include="XMLLevelLoader.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="SDLEngine.h" />
