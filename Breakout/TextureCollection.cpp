@@ -11,7 +11,7 @@ TextureCollection::~TextureCollection()
 	Clear();
 }
 
-int TextureCollection::GetIndex(const string& name)
+int TextureCollection::GetIndex(const string& name) const
 {
 	auto it = find_if(m_Textures.begin(), m_Textures.end(), [name](const Texture& v) {return v.Name == name; });
 	if (it != m_Textures.end())
@@ -22,7 +22,7 @@ int TextureCollection::GetIndex(const string& name)
 	return -1;
 }
 
-Texture TextureCollection::operator [] (const string& name)
+Texture TextureCollection::operator [] (const string& name) const
 {
 	int index = GetIndex(name);
 	if (index != -1)
@@ -43,7 +43,7 @@ void TextureCollection::Clear()
 	m_Textures.clear();
 }
 
-int TextureCollection::Size()
+int TextureCollection::Size() const
 {
 	return (int)m_Textures.size();
 }

@@ -16,15 +16,15 @@ public:
 	TextureCollection();
 	~TextureCollection();
 
-	inline Texture operator [] (int index)
+	inline Texture operator [] (int index) const
 	{
 		return m_Textures[index];
 	}
 
-	Texture operator [] (const std::string& name);
+	Texture operator [] (const std::string& name) const;
 
 	void Clear();
-	int Size();
+	int Size() const;
 
 	bool LoadTexture(const std::string& path, SDL_Renderer* pRenderer, const char* name = nullptr);
 	bool AddFontTexture(const std::string& text, const std::string& name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor);
@@ -32,6 +32,6 @@ public:
 
 private:
 	std::vector<Texture> m_Textures;
-	int GetIndex(const std::string& name);
+	int GetIndex(const std::string& name) const;
 };
 
