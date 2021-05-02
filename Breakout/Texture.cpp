@@ -2,48 +2,64 @@
 
 using namespace std;
 
-Texture::Texture()
-{
-	pTexture = nullptr;
-	Width = 0;
-	Height = 0;
-}
-
-Texture::Texture(const Texture& other)
-{
-	Width = other.Width;
-	Height = other.Height;
-	Name = other.Name;
-	//needs fix with smart ptr
-	pTexture = other.pTexture;
-}
-
-Texture::~Texture()
-{
-
-}
-
-int Texture::GetWidth() const
-{
-	return Width;
-}
-
-int Texture::GetHeight() const
-{
-	return Height;
-}
-
-void Texture::Free()
+void ReleaseTexture(SDL_Texture *pTexture)
 {
 	SDL_DestroyTexture(pTexture);
 	pTexture = nullptr;
 }
 
-bool Texture::LoadTextureFromFile(const string& path, const string& name, SDL_Renderer* pRenderer)
+Texture::Texture()
 {
-	//Free if something existed
-	Free();
+	m_Texture = nullptr;
+	m_Width = 0;
+	m_Height = 0;
+}
 
+Texture::Texture(const Texture& other)
+{
+	m_Width = other.m_Width;
+	m_Height = other.m_Height;
+	m_Name = other.m_Name;
+
+	m_Texture = other.m_Texture;
+}
+
+Texture::~Texture()
+{
+	Free();
+}
+
+SDL_Texture* Texture::GetTexture() const
+{
+	return m_Texture.get();
+}
+
+const std::string& Texture::GetName() const
+{
+	return m_Name;
+}
+
+int Texture::GetWidth() const
+{
+	return m_Width;
+}
+
+int Texture::GetHeight() const
+{
+	return m_Height;
+}
+
+void Texture::Free()
+{
+	/*if (m_Texture.unique())
+	{
+		SDL_DestroyTexture(m_Texture.get());
+	}*/
+	m_Texture = nullptr;
+}
+
+bool Texture::LoadTextureFromFile(const string& path, SDL_Renderer* pRenderer, const string& name)
+{
 	//Load image at specified path
 	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 	if (loadedSurface == nullptr)
@@ -52,17 +68,24 @@ bool Texture::LoadTextureFromFile(const string& path, const string& name, SDL_Re
 		return false;
 	}
 
-	Width = loadedSurface->w;
-	Height = loadedSurface->h;
-	Name = name;
+	m_Width = loadedSurface->w;
+	m_Height = loadedSurface->h;
+	if (!name.empty())
+	{
+		m_Name = name;
+	}
+	else
+	{
+		m_Name = path;
+	}
 
 	//Create texture from surface pixels
-	pTexture = SDL_CreateTextureFromSurface(pRenderer, loadedSurface);
+	m_Texture.reset(SDL_CreateTextureFromSurface(pRenderer, loadedSurface), ReleaseTexture);
 
 	//Get rid of old loaded surface
 	SDL_FreeSurface(loadedSurface);
 
-	if (pTexture == nullptr)
+	if (m_Texture == nullptr)
 	{
 		printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
 		return false;
@@ -71,11 +94,8 @@ bool Texture::LoadTextureFromFile(const string& path, const string& name, SDL_Re
 	return true;
 }
 
-bool Texture::CreateFontTexture(const string& text, const string& name, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor)
+bool Texture::CreateFontTexture(const string& text, SDL_Renderer* pRenderer, TTF_Font* pFont, SDL_Color textColor, const string& name)
 {
-	//Free if something existed
-	Free();
-
 	//Render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(pFont, text.c_str(), textColor);
 	if (textSurface == nullptr)
@@ -84,17 +104,25 @@ bool Texture::CreateFontTexture(const string& text, const string& name, SDL_Rend
 
 		return false;
 	}
-	Width = textSurface->w;
-	Height = textSurface->h;
-	Name = name;
+	m_Width = textSurface->w;
+	m_Height = textSurface->h;
+
+	if (!name.empty())
+	{
+		m_Name = name;
+	}
+	else
+	{
+		m_Name = text;
+	}
 
 	//Create texture from surface pixels
-	pTexture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
+	m_Texture.reset(SDL_CreateTextureFromSurface(pRenderer, textSurface), ReleaseTexture);
 
 	//Get rid of old surface
 	SDL_FreeSurface(textSurface);
 
-	if (pTexture == nullptr)
+	if (m_Texture == nullptr)
 	{
 		printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
 

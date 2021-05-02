@@ -7,33 +7,33 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 {
 	float collisionX, collisionY;
 
-	collisionY = circle.centerY();
+	collisionY = circle.CenterY();
 
-	clamp(collisionY, rect.top(), rect.bottom());
+	clamp(collisionY, rect.Top(), rect.Bottom());
 
-	if (circle.centerX() < rect.left())
+	if (circle.CenterX() < rect.Left())
 	{
-		collisionX = rect.left();
+		collisionX = rect.Left();
 	}
-	else if (circle.centerX() > rect.right())
+	else if (circle.CenterX() > rect.Right())
 	{
-		collisionX = rect.right();
+		collisionX = rect.Right();
 	}
 	else
 	{
-		collisionX = circle.centerX();
+		collisionX = circle.CenterX();
 	}
 
-	collisionY = circle.centerY();
-	clamp(collisionY, rect.top(), rect.bottom());
+	collisionY = circle.CenterY();
+	clamp(collisionY, rect.Top(), rect.Bottom());
 
 	if (CircleContainsDot(circle, collisionX, collisionY))
 	{
-		if (circle.centerX() < rect.left())
+		if (circle.CenterX() < rect.Left())
 		{
-			if (circle.centerY() < rect.top())
+			if (circle.CenterY() < rect.Top())
 			{
-				if (rect.left() - circle.centerX() < rect.top() - circle.centerY())
+				if (rect.Left() - circle.CenterX() < rect.Top() - circle.CenterY())
 				{
 					return COLLISION_TOP;
 				}
@@ -42,9 +42,9 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 					return COLLISION_LEFT;
 				}
 			}
-			else if (circle.centerY() > rect.top())
+			else if (circle.CenterY() > rect.Top())
 			{
-				if (rect.left() - circle.centerX() < circle.centerY() - rect.top())
+				if (rect.Left() - circle.CenterX() < circle.CenterY() - rect.Top())
 				{
 					return COLLISION_BOTTOM;
 				}
@@ -58,11 +58,11 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 				return COLLISION_LEFT;
 			}
 		}
-		else if (circle.centerX() > rect.right())
+		else if (circle.CenterX() > rect.Right())
 		{
-			if (circle.centerY() < rect.top())
+			if (circle.CenterY() < rect.Top())
 			{
-				if (circle.centerX() - rect.right() < rect.top() - circle.centerY())
+				if (circle.CenterX() - rect.Right() < rect.Top() - circle.CenterY())
 				{
 					return COLLISION_TOP;
 				}
@@ -71,9 +71,9 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 					return COLLISION_RIGHT;
 				}
 			}
-			else if (circle.centerY() > rect.top())
+			else if (circle.CenterY() > rect.Top())
 			{
-				if (circle.centerX() - rect.right() < circle.centerY() - rect.top())
+				if (circle.CenterX() - rect.Right() < circle.CenterY() - rect.Top())
 				{
 					return COLLISION_BOTTOM;
 				}
@@ -89,7 +89,7 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 		}
 		else
 		{
-			if (circle.centerY() < rect.top())
+			if (circle.CenterY() < rect.Top())
 			{
 				return COLLISION_TOP;
 			}
@@ -107,5 +107,5 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 
 bool CircleContainsDot(const Sprite &circle, float x, float y)
 {
-	return square(circle.centerX() - x) + square(circle.centerY() - y) < square(circle.radius());
+	return square(circle.CenterX() - x) + square(circle.CenterY() - y) < square(circle.Radius());
 }

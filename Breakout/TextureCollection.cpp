@@ -13,7 +13,7 @@ TextureCollection::~TextureCollection()
 
 int TextureCollection::GetIndex(const string& name) const
 {
-	auto it = find_if(m_Textures.begin(), m_Textures.end(), [name](const Texture& v) {return v.Name == name; });
+	auto it = find_if(m_Textures.begin(), m_Textures.end(), [name](const Texture& v) {return v.GetName() == name; });
 	if (it != m_Textures.end())
 	{
 		return (int)(it - m_Textures.begin());
@@ -55,14 +55,14 @@ bool TextureCollection::LoadTexture(const string& path, SDL_Renderer* pRenderer,
 
 	if (name == nullptr)
 	{
-		if (!texture.LoadTextureFromFile(path, path, pRenderer))
+		if (!texture.LoadTextureFromFile(path, pRenderer, path))
 		{
 			return false;
 		}
 	}
 	else
 	{
-		if (!texture.LoadTextureFromFile(path, name, pRenderer))
+		if (!texture.LoadTextureFromFile(path, pRenderer, name))
 		{
 			return false;
 		}
@@ -78,7 +78,7 @@ bool TextureCollection::AddFontTexture(const string& text, const string& name, S
 {
 	Texture texture;
 	
-	if (!texture.CreateFontTexture(text, name, pRenderer, pFont, textColor))
+	if (!texture.CreateFontTexture(text, pRenderer, pFont, textColor, name))
 	{
 		return false;
 	}
@@ -97,7 +97,7 @@ bool TextureCollection::UpdateFontTexture(const string& text, const string& name
 		return false;
 	}
 
-	if (!m_Textures[index].CreateFontTexture(text, name, pRenderer, pFont, textColor))
+	if (!m_Textures[index].CreateFontTexture(text, pRenderer, pFont, textColor, name))
 	{
 		return false;
 	}

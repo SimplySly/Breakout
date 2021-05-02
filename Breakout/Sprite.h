@@ -1,9 +1,11 @@
 #pragma once
+#include "Texture.h"
+
 class Sprite
 {
 public:
 	Sprite();
-	Sprite(float PosX, float PosY, int Width, int Height, int TextureIndex);
+	Sprite(float PosX, float PosY, int Width, int Height, Texture t);
 
 	float PositionX;
 	float PositionY;
@@ -11,15 +13,18 @@ public:
 	int Width;
 	int Height;
 
-	int TextureIndex;
+	SDL_Texture* GetTexture();
 
-	float left() const;
-	float right() const;
-	float bottom() const;
-	float top() const;
+	float Left() const;
+	float Right() const;
+	float Bottom() const;
+	float Top() const;
 
-	float centerX() const;
-	float centerY() const;
-	float radius() const;
+	float CenterX() const;
+	float CenterY() const;
+	float Radius() const;
+
+private:
+	Texture m_Texture;
 };
 

@@ -83,7 +83,7 @@ private:
 	bool InitGameState(); 
 	bool LoadLevelList();
 
-	void RenderSprite(const Sprite* sprite);
+	void RenderSprite(Sprite* sprite);
 
 	bool BounceOppositeDirection(float distanceX, const Vector2& ballDirection);
 	bool BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY);
@@ -126,7 +126,6 @@ private:
 	std::vector<std::string> m_LevelList;
 
 	GameObject *m_Paddle, *m_Ball;
-	TextureCollection m_LevelTextures;
 	TextureCollection m_GameTextures;
 	SoundCollection m_Sounds;
 	std::vector<Brick> m_LevelBricks;

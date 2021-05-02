@@ -6,45 +6,50 @@ Sprite::Sprite()
 	PositionY = 0;
 	Width = 0;
 	Height = 0;
-	TextureIndex = 0;
 }
 
-Sprite::Sprite(float PosX, float PosY, int Width, int Height, int TextureIndex) 
-	: PositionX(PosX), PositionY(PosY), Width(Width), Height(Height), TextureIndex(TextureIndex)
+Sprite::Sprite(float PosX, float PosY, int Width, int Height, Texture t) 
+	: PositionX(PosX), PositionY(PosY), Width(Width), Height(Height)
 {
+	m_Texture = t;
 }
 
-float Sprite::left() const
+SDL_Texture* Sprite::GetTexture()
+{
+	return m_Texture.GetTexture();
+}
+
+float Sprite::Left() const
 {
 	return PositionX;
 }
 
-float Sprite::right() const
+float Sprite::Right() const
 {
 	return PositionX + Width;
 }
 
-float Sprite::bottom() const
+float Sprite::Bottom() const
 {
 	return PositionY + Height;
 }
 
-float Sprite::top() const
+float Sprite::Top() const
 {
 	return PositionY;
 }
 
-float Sprite::centerX() const
+float Sprite::CenterX() const
 {
 	return PositionX + Width / 2.0f;
 }
 
-float Sprite::centerY() const
+float Sprite::CenterY() const
 {
 	return PositionY + Height / 2.0f;
 }
 
-float Sprite::radius() const
+float Sprite::Radius() const
 {
 	return Width / 2.0f;
 }

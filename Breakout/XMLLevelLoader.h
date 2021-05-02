@@ -18,13 +18,13 @@ class XMLLevelLoader
 public: 
 	XMLLevelLoader();
 	~XMLLevelLoader();
-	bool LoadFromXML(const std::string& path, LevelInfo &levelInfo, std::vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, SoundCollection& soundCollection, int brickAreaWidth, int brickAreaHeight);
+	bool LoadFromXML(const std::string& path, LevelInfo &levelInfo, std::vector<Brick>& bricks, SDL_Renderer* pRenderer, SoundCollection& soundCollection, int brickAreaWidth, int brickAreaHeight);
 
 
 private:
 	bool LoadLevelAttributes(tinyxml2::XMLElement* levelElement, XMLLevelContext& levelContext);
 	bool LoadBrickTypes(tinyxml2::XMLElement* levelElement);
-	bool LoadBrickList(tinyxml2::XMLElement* levelElement, const XMLLevelContext& levelContext, int textureBaseIndex, std::vector<Brick> &bricks, int &BricksToDestroy, int brickAreaWidth, int brickAreaHeight);
+	bool LoadBrickList(tinyxml2::XMLElement* levelElement, const XMLLevelContext& levelContext, const TextureCollection &textures, std::vector<Brick> &bricks, int &BricksToDestroy, int brickAreaWidth, int brickAreaHeight);
 
 	std::vector<BrickType> m_BrickTypes;
 };

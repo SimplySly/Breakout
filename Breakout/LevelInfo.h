@@ -1,10 +1,12 @@
 #pragma once
+#include "Texture.h"
+
 class LevelInfo
 {
 public:
 	LevelInfo();
 
-	int BackgroundTextureIndex;
+	Texture BackgroundTexture;
 	int BricksToDestroy;
 };
 

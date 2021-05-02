@@ -231,14 +231,14 @@ void SDLEngine::ClearLevelObjects()
 		m_Ball = nullptr;
 	}
 
-	m_LevelTextures.Clear();
 	m_Sounds.Clear();
 	m_LevelBricks.clear();
 }
 
 bool SDLEngine::LoadLevelObjects(const string& levelPath)
 {
-	if (!m_LevelTextures.LoadTexture("Textures/paddle/paddle_wood.png", m_Renderer))
+	Texture t;
+	if (!t.LoadTextureFromFile("Textures/paddle/paddle_wood.png", m_Renderer))
 	{
 		return false;
 	}
@@ -246,9 +246,9 @@ bool SDLEngine::LoadLevelObjects(const string& levelPath)
 	m_Paddle = new GameObject();
 	m_Paddle->SpeedX = 0.0f;
 	m_Paddle->SpeedY = 0.0f;
-	m_Paddle->sprite = Sprite((float)m_PlayableScreenWidth / 2 - PADDLE_WIDTH / 2, (float)m_PlayableScreenHeight * 29 / 30 - 10, PADDLE_WIDTH, PADDLE_HEIGHT, 0);
+	m_Paddle->sprite = Sprite((float)m_PlayableScreenWidth / 2 - PADDLE_WIDTH / 2, (float)m_PlayableScreenHeight * 29 / 30 - 10, PADDLE_WIDTH, PADDLE_HEIGHT, t);
 
-	if (!m_LevelTextures.LoadTexture("Textures/ball/ball.png", m_Renderer))
+	if (!t.LoadTextureFromFile("Textures/ball/ball.png", m_Renderer))
 	{
 		return false;
 	}
@@ -256,11 +256,11 @@ bool SDLEngine::LoadLevelObjects(const string& levelPath)
 	m_Ball = new GameObject();
 	m_Ball->SpeedX = BALL_SPEED_X;
 	m_Ball->SpeedY = BALL_SPEED_Y;
-	m_Ball->sprite = Sprite((float)m_PlayableScreenWidth / 2 - BALL_RADIUS / 2, (float)m_PlayableScreenHeight / 2 - BALL_RADIUS / 2, BALL_RADIUS, BALL_RADIUS, 1);
+	m_Ball->sprite = Sprite((float)m_PlayableScreenWidth / 2 - BALL_RADIUS / 2, (float)m_PlayableScreenHeight / 2 - BALL_RADIUS / 2, BALL_RADIUS, BALL_RADIUS, t);
 
 	XMLLevelLoader level;
 
-	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks, m_LevelTextures,
+	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks,
 		m_Renderer, m_Sounds, m_PlayableScreenWidth, m_PlayableScreenHeight))
 	{
 		return false;
@@ -324,7 +324,7 @@ bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& fli
 {
 	if (m_Ball->SpeedX > 0)
 	{
-		if (m_Ball->sprite.right() + ballDeltaX > m_PlayableScreenWidth)
+		if (m_Ball->sprite.Right() + ballDeltaX > m_PlayableScreenWidth)
 		{
 			flipX = true;
 
@@ -333,7 +333,7 @@ bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& fli
 	}
 	if (m_Ball->SpeedX < 0)
 	{
-		if (m_Ball->sprite.left() + ballDeltaX < 0)
+		if (m_Ball->sprite.Left() + ballDeltaX < 0)
 		{
 			flipX = true;
 
@@ -343,7 +343,7 @@ bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& fli
 
 	if (m_Ball->SpeedY < 0)
 	{
-		if (m_Ball->sprite.top() + ballDeltaY < 0)
+		if (m_Ball->sprite.Top() + ballDeltaY < 0)
 		{
 			flipY = true;
 
@@ -352,7 +352,7 @@ bool SDLEngine::BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& fli
 	}
 	if (m_Ball->SpeedY > 0)
 	{
-		if (m_Ball->sprite.bottom() + ballDeltaY > m_PlayableScreenHeight)
+		if (m_Ball->sprite.Bottom() + ballDeltaY > m_PlayableScreenHeight)
 		{
 			BallDeath();
 
@@ -400,7 +400,7 @@ void SDLEngine::BounceBallOffPaddle()
 	Vector2 ballDirection(-m_Ball->SpeedX, -m_Ball->SpeedY);
 
 
-	float distanceX = m_Ball->sprite.centerX() - m_Paddle->sprite.centerX();
+	float distanceX = m_Ball->sprite.CenterX() - m_Paddle->sprite.CenterX();
 	float rotateBounceNormalAngle = (distanceX / m_Paddle->sprite.Width / 2) * MAX_NORMAL_ROTATION;
 
 	if (BounceOppositeDirection(distanceX, ballDirection))
@@ -443,7 +443,7 @@ void SDLEngine::UpdatePlayingState()
 	float paddleDeltaX = m_Paddle->SpeedX * TimeDelta;
 	if (m_Paddle->SpeedX > 0.0f)
 	{
-		if ((int)m_Paddle->sprite.right() + paddleDeltaX < m_ScreenWidth)
+		if ((int)m_Paddle->sprite.Right() + paddleDeltaX < m_ScreenWidth)
 		{
 			m_Paddle->sprite.PositionX += paddleDeltaX;
 		}
@@ -451,7 +451,7 @@ void SDLEngine::UpdatePlayingState()
 
 	if (m_Paddle->SpeedX < 0.0f)
 	{
-		if ((int)m_Paddle->sprite.left() + paddleDeltaX > 0)
+		if ((int)m_Paddle->sprite.Left() + paddleDeltaX > 0)
 		{
 			m_Paddle->sprite.PositionX += paddleDeltaX;
 		}
@@ -606,7 +606,7 @@ void SDLEngine::Update()
 	}
 }
 
-void SDLEngine::RenderSprite(const Sprite* sprite)
+void SDLEngine::RenderSprite(Sprite* sprite)
 {
 	if (sprite == nullptr)
 	{
@@ -616,7 +616,7 @@ void SDLEngine::RenderSprite(const Sprite* sprite)
 	SDL_Rect renderQuad = { (int)sprite->PositionX, (int)sprite->PositionY, sprite->Width, sprite->Height };
 
 	//Render to screen
-	SDL_RenderCopy(m_Renderer, m_LevelTextures[sprite->TextureIndex].pTexture, nullptr, &renderQuad);
+	SDL_RenderCopy(m_Renderer, sprite->GetTexture(), nullptr, &renderQuad);
 }
 
 void SDLEngine::RenderHUD()
@@ -631,12 +631,12 @@ void SDLEngine::RenderHUD()
 
 	const Texture& pLifeTexture = m_GameTextures["Life"];
 	SDL_Rect lifeRenderRect = { 0, m_ScreenHeight - HUD_HEIGHT, pLifeTexture.GetWidth(), HUD_HEIGHT };
-	SDL_RenderCopy(m_Renderer, pLifeTexture.pTexture, nullptr, &lifeRenderRect);
+	SDL_RenderCopy(m_Renderer, pLifeTexture.GetTexture(), nullptr, &lifeRenderRect);
 
 
 	const Texture& pScoreTexture = m_GameTextures["Score"];
 	SDL_Rect scoreRenderRect = { m_ScreenWidth - pScoreTexture.GetWidth(), m_ScreenHeight - HUD_HEIGHT, pScoreTexture.GetWidth(), HUD_HEIGHT };
-	SDL_RenderCopy(m_Renderer, pScoreTexture.pTexture, nullptr, &scoreRenderRect);
+	SDL_RenderCopy(m_Renderer, pScoreTexture.GetTexture(), nullptr, &scoreRenderRect);
 }
 
 void SDLEngine::RenderGame()
@@ -644,7 +644,7 @@ void SDLEngine::RenderGame()
 	//Clear screen
 	SDL_RenderClear(m_Renderer);
 
-	SDL_RenderCopy(m_Renderer, m_LevelTextures[m_LevelInfo.BackgroundTextureIndex].pTexture, nullptr, nullptr);
+	SDL_RenderCopy(m_Renderer, m_LevelInfo.BackgroundTexture.GetTexture(), nullptr, nullptr);
 
 	for (auto& brick : m_LevelBricks)
 	{
@@ -667,7 +667,7 @@ void SDLEngine::RenderGame()
 			m_ScreenHeight / 2 - pStartMsgTexture.GetHeight() / 2,
 			pStartMsgTexture.GetWidth(),
 			pStartMsgTexture.GetHeight() };
-		SDL_RenderCopy(m_Renderer, pStartMsgTexture.pTexture, nullptr, &renderRect);
+		SDL_RenderCopy(m_Renderer, pStartMsgTexture.GetTexture(), nullptr, &renderRect);
 	}
 
 	//Update screen
@@ -688,21 +688,21 @@ void SDLEngine::RenderLevelDisplay()
 {
 	SDL_RenderClear(m_Renderer);
 
-	SDL_RenderCopy(m_Renderer, m_GameTextures["LevelDisplay"].pTexture, nullptr, nullptr);
+	SDL_RenderCopy(m_Renderer, m_GameTextures["LevelDisplay"].GetTexture(), nullptr, nullptr);
 
 	const Texture& pLevelNumberTexture = m_GameTextures["LevelNumber"];
 	SDL_Rect pLvlenderRect = { m_ScreenWidth / 2 - pLevelNumberTexture.GetWidth() / 2,
 		m_ScreenHeight / 2 - pLevelNumberTexture.GetHeight() / 2,
 		pLevelNumberTexture.GetWidth(),
 		pLevelNumberTexture.GetHeight() };
-	SDL_RenderCopy(m_Renderer, pLevelNumberTexture.pTexture, nullptr, &pLvlenderRect);
+	SDL_RenderCopy(m_Renderer, pLevelNumberTexture.GetTexture(), nullptr, &pLvlenderRect);
 
 	const Texture& pStartMsgTexture = m_GameTextures["StartMsg"];
 	SDL_Rect renderRect = { m_ScreenWidth / 2 - pStartMsgTexture.GetWidth() / 2,
 		4 * m_ScreenHeight / 5 - pStartMsgTexture.GetHeight() / 2,
 		pStartMsgTexture.GetWidth(),
 		pStartMsgTexture.GetHeight() };
-	SDL_RenderCopy(m_Renderer, pStartMsgTexture.pTexture, nullptr, &renderRect);
+	SDL_RenderCopy(m_Renderer, pStartMsgTexture.GetTexture(), nullptr, &renderRect);
 
 	//Update screen
 	SDL_RenderPresent(m_Renderer);
@@ -726,14 +726,14 @@ void SDLEngine::Render()
 
 	if (m_GameState == GAME_STATE_WIN)
 	{
-		RenderTexture(m_GameTextures["Win"].pTexture);
+		RenderTexture(m_GameTextures["Win"].GetTexture());
 
 		return;
 	}
 
 	if (m_GameState == GAME_STATE_LOSE)
 	{
-		RenderTexture(m_GameTextures["Lose"].pTexture);
+		RenderTexture(m_GameTextures["Lose"].GetTexture());
 
 		return;
 	}

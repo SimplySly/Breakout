@@ -15,10 +15,11 @@ XMLLevelLoader::~XMLLevelLoader()
 {
 }
 
-bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vector<Brick>& bricks, TextureCollection& textureCollection, SDL_Renderer* pRenderer, SoundCollection &soundCollection, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vector<Brick>& bricks, SDL_Renderer* pRenderer, SoundCollection &soundCollection, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLDocument doc;
 	XMLLevelContext levelContext = { 0 };
+	TextureCollection brickTextures;
 
 	levelContext.BrickSizeX = 9;
 	levelContext.BrickSizeY = 3;
@@ -41,24 +42,19 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vecto
 		return false;
 	}
 
-	levelInfo.BackgroundTextureIndex = textureCollection.Size();
-	if (!textureCollection.LoadTexture(levelContext.BackgroundTexture, pRenderer))
-	{
-		return false;
-	}
+	levelInfo.BackgroundTexture.LoadTextureFromFile(levelContext.BackgroundTexture, pRenderer);
 
 	if (!LoadBrickTypes(levelElement))
 	{
 		return false;
 	}
 
-	int textureBaseIndex = textureCollection.Size();
 	int soundBaseIndex = soundCollection.Size();
 	vector<string> loadedSounds;
 
 	for (auto& brick : m_BrickTypes)
 	{
-		if (!textureCollection.LoadTexture(brick.Texture, pRenderer))
+		if (!brickTextures.LoadTexture(brick.Texture, pRenderer))
 		{
 			return false;
 		}
@@ -103,7 +99,7 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vecto
 		
 	}
 
-	bool ret = LoadBrickList(levelElement, levelContext, textureBaseIndex, bricks, levelInfo.BricksToDestroy, brickAreaWidth, brickAreaHeight);
+	bool ret = LoadBrickList(levelElement, levelContext, brickTextures, bricks, levelInfo.BricksToDestroy, brickAreaWidth, brickAreaHeight);
 	if (!ret)
 	{
 		return false;
@@ -197,7 +193,7 @@ bool XMLLevelLoader::LoadBrickTypes(XMLElement* levelElement)
 	return true;
 }
 
-bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelContext& levelContext, int textureBaseIndex, std::vector<Brick>& bricks, int& BricksToDestroy, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelContext& levelContext, const TextureCollection& bricksTextures, std::vector<Brick>& bricks, int& BricksToDestroy, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLElement* brickList = levelElement->FirstChildElement("Bricks");
 	if (brickList == nullptr)
@@ -249,7 +245,7 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 					rowIndex * levelContext.BrickSizeY * spaceUnitY + rowIndex * levelContext.RowSpacing * spaceUnitY,
 					(int)(levelContext.BrickSizeX * spaceUnitX),
 					(int)(levelContext.BrickSizeY * spaceUnitY),
-					textureBaseIndex + (int)i);
+					bricksTextures[(int)i]);
 
 				bricks.push_back(brick);
 				break;
