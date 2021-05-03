@@ -8,7 +8,6 @@
 #include "Brick.h"
 #include "TextureCollection.h"
 #include "LevelInfo.h"
-#include "SoundCollection.h"
 #include "XMLLevelContext.h"
 
 #pragma comment(lib, "tinyxml2.lib")
