@@ -51,10 +51,6 @@ int Texture::GetHeight() const
 
 void Texture::Free()
 {
-	/*if (m_Texture.unique())
-	{
-		SDL_DestroyTexture(m_Texture.get());
-	}*/
 	m_Texture = nullptr;
 }
 

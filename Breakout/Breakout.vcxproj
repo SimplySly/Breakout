@@ -156,7 +156,7 @@
     <ClCompile Include="LevelInfo.cpp" />
     <ClCompile Include="MathExtensions.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
-    <ClCompile Include="SoundCollection.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="XMLLevelContext.cpp" />
     <ClCompile Include="XMLLevelLoader.cpp" />
@@ -175,7 +175,7 @@
     <ClInclude Include="LevelInfo.h" />
     <ClInclude Include="MathExtensions.h" />
     <ClInclude Include="PlayerInfo.h" />
-    <ClInclude Include="SoundCollection.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="StdStringExtensions.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="XMLLevelContext.h" />

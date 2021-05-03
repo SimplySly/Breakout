@@ -1,14 +1,18 @@
 #pragma once
+#include "Sound.h"
+#include "Texture.h"
+
 struct BrickType
 {
 public:
     char* Id;
-    char* Texture;
+    char* TextureName;
+    Texture Texture;
     int HitPoints;
-    char* HitSound;
-    int HitSoundIndex;
-    char* BreakSound;
-    int BreakSoundIndex;
+    char* HitSoundName;
+    Sound HitSound;
+    char* BreakSoundName;
+    Sound BreakSound;
     int BreakScore;
 };
 

@@ -15,11 +15,10 @@ XMLLevelLoader::~XMLLevelLoader()
 {
 }
 
-bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vector<Brick>& bricks, SDL_Renderer* pRenderer, SoundCollection &soundCollection, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vector<Brick>& bricks, SDL_Renderer* pRenderer, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLDocument doc;
 	XMLLevelContext levelContext = { 0 };
-	TextureCollection brickTextures;
 
 	levelContext.BrickSizeX = 9;
 	levelContext.BrickSizeY = 3;
@@ -49,60 +48,72 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vecto
 		return false;
 	}
 
-	int soundBaseIndex = soundCollection.Size();
-	vector<string> loadedSounds;
+	if (!LoadBrickTextureAndSounds(pRenderer))
+	{
+		return false;
+	}
+
+	bool ret = LoadBrickList(levelElement, levelContext, bricks, levelInfo.BricksToDestroy, brickAreaWidth, brickAreaHeight);
+	if (!ret)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool XMLLevelLoader::LoadBrickTextureAndSounds(SDL_Renderer *pRenderer)
+{
+	vector<string> loadedSoundNames;
+	vector<Sound> brickSounds;
 
 	for (auto& brick : m_BrickTypes)
 	{
-		if (!brickTextures.LoadTexture(brick.Texture, pRenderer))
+		if (!brick.Texture.LoadTextureFromFile(brick.TextureName, pRenderer))
 		{
 			return false;
 		}
 
-		auto it = find(loadedSounds.begin(), loadedSounds.end(), brick.HitSound);
-		if (it != loadedSounds.end())
+		if (!LoadBrickSound(brick.HitSound, brick.HitSoundName, loadedSoundNames, brickSounds))
 		{
-			brick.HitSoundIndex = (int)(it - loadedSounds.begin());
+			return false;
 		}
-		else
+
+		if (brick.BreakSoundName != nullptr)
 		{
-			brick.HitSoundIndex = (int)loadedSounds.size();
-			loadedSounds.push_back(brick.HitSound);
-			if (!soundCollection.LoadSound(brick.HitSound))
+			if (!LoadBrickSound(brick.BreakSound, brick.BreakSoundName, loadedSoundNames, brickSounds))
 			{
 				return false;
 			}
 		}
-
-		if (brick.BreakSound != nullptr)
-		{
-			it = find(loadedSounds.begin(), loadedSounds.end(), brick.BreakSound);
-			if (it != loadedSounds.end())
-			{
-				brick.BreakSoundIndex = (int)(it - loadedSounds.begin());
-			}
-			else
-			{
-				brick.BreakSoundIndex = (int)loadedSounds.size();
-				loadedSounds.push_back(brick.BreakSound);
-				if (!soundCollection.LoadSound(brick.BreakSound))
-				{
-					return false;
-				}
-			}
-		}
-		else
-		{
-			//not important but w/e
-			brick.BreakSoundIndex = 0;
-		}
-		
 	}
 
-	bool ret = LoadBrickList(levelElement, levelContext, brickTextures, bricks, levelInfo.BricksToDestroy, brickAreaWidth, brickAreaHeight);
-	if (!ret)
+	return true;
+}
+
+
+bool XMLLevelLoader::LoadBrickSound(Sound& sound, const char* soundName, vector<string>& loadedSoundNames, vector<Sound>& brickSounds)
+{
+	//recycle for greener planet
+	auto it = find(loadedSoundNames.begin(), loadedSoundNames.end(), soundName);
+	if (it != loadedSoundNames.end())
 	{
-		return false;
+		sound = brickSounds[(int)(it - loadedSoundNames.begin())];
+	}
+	else
+	{
+		//load new sound...
+		Sound s;
+
+		if (!s.LoadSound(soundName))
+		{
+			return false;
+		}
+
+		loadedSoundNames.push_back(soundName);
+		brickSounds.push_back(s);
+
+		sound = brickSounds.back();
 	}
 
 	return true;
@@ -150,7 +161,7 @@ bool XMLLevelLoader::LoadBrickTypes(XMLElement* levelElement)
 		{
 			return false;
 		}
-		if (pBrickTypeElement->QueryStringAttribute("Texture", (const char**)&brickType.Texture) != XML_SUCCESS)
+		if (pBrickTypeElement->QueryStringAttribute("Texture", (const char**)&brickType.TextureName) != XML_SUCCESS)
 		{
 			return false;
 		}
@@ -170,15 +181,15 @@ bool XMLLevelLoader::LoadBrickTypes(XMLElement* levelElement)
 			brickType.HitPoints = SDL_atoi(temp);
 		}
 
-		if (pBrickTypeElement->QueryStringAttribute("HitSound", (const char**)&brickType.HitSound) != XML_SUCCESS)
+		if (pBrickTypeElement->QueryStringAttribute("HitSound", (const char**)&brickType.HitSoundName) != XML_SUCCESS)
 		{
 			return false;
 		}
 
-		if (pBrickTypeElement->QueryStringAttribute("BreakSound", (const char**)&brickType.BreakSound) != XML_SUCCESS)
+		if (pBrickTypeElement->QueryStringAttribute("BreakSound", (const char**)&brickType.BreakSoundName) != XML_SUCCESS)
 		{
 			//can be omitted if brick can't break
-			brickType.BreakSound = nullptr;
+			brickType.BreakSoundName = nullptr;
 		}
 
 		if (pBrickTypeElement->QueryIntAttribute("BreakScore", &brickType.BreakScore) != XML_SUCCESS)
@@ -193,7 +204,7 @@ bool XMLLevelLoader::LoadBrickTypes(XMLElement* levelElement)
 	return true;
 }
 
-bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelContext& levelContext, const TextureCollection& bricksTextures, std::vector<Brick>& bricks, int& BricksToDestroy, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelContext& levelContext, std::vector<Brick>& bricks, int& BricksToDestroy, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLElement* brickList = levelElement->FirstChildElement("Bricks");
 	if (brickList == nullptr)
@@ -233,8 +244,8 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 
 				brick.HitPoints = m_BrickTypes[i].HitPoints;
 				brick.Score = m_BrickTypes[i].BreakScore;
-				brick.BreakSoundIndex = m_BrickTypes[i].BreakSoundIndex;
-				brick.HitSoundIndex = m_BrickTypes[i].HitSoundIndex;
+				brick.BreakSound = m_BrickTypes[i].BreakSound;
+				brick.HitSound = m_BrickTypes[i].HitSound;
 				brick.IsActive = brick.HitPoints > 0 || brick.HitPoints == -1;
 				if (brick.HitPoints > 0)
 				{
@@ -245,7 +256,7 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 					rowIndex * levelContext.BrickSizeY * spaceUnitY + rowIndex * levelContext.RowSpacing * spaceUnitY,
 					(int)(levelContext.BrickSizeX * spaceUnitX),
 					(int)(levelContext.BrickSizeY * spaceUnitY),
-					bricksTextures[(int)i]);
+					m_BrickTypes[i].Texture);
 
 				bricks.push_back(brick);
 				break;

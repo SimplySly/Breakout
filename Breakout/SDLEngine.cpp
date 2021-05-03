@@ -231,7 +231,6 @@ void SDLEngine::ClearLevelObjects()
 		m_Ball = nullptr;
 	}
 
-	m_Sounds.Clear();
 	m_LevelBricks.clear();
 }
 
@@ -261,7 +260,7 @@ bool SDLEngine::LoadLevelObjects(const string& levelPath)
 	XMLLevelLoader level;
 
 	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks,
-		m_Renderer, m_Sounds, m_PlayableScreenWidth, m_PlayableScreenHeight))
+		m_Renderer, m_PlayableScreenWidth, m_PlayableScreenHeight))
 	{
 		return false;
 	}
@@ -487,11 +486,11 @@ void SDLEngine::UpdatePlayingState()
 				continue;
 			}
 
-			Mix_PlayChannel(-1, m_Sounds[brick.HitSoundIndex], 0);
+			Mix_PlayChannel(-1, brick.HitSound.GetMixChunk(), 0);
 			brick.DecreaseHitPoints();
 			if (!brick.IsActive)
 			{
-				Mix_PlayChannel(-1, m_Sounds[brick.BreakSoundIndex], 0);
+				Mix_PlayChannel(-1, brick.BreakSound.GetMixChunk(), 0);
 
 				m_PlayerInfo.Score += brick.Score;
 				m_LevelInfo.BricksToDestroy--;

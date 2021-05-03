@@ -127,6 +127,5 @@ private:
 
 	GameObject *m_Paddle, *m_Ball;
 	TextureCollection m_GameTextures;
-	SoundCollection m_Sounds;
 	std::vector<Brick> m_LevelBricks;
 };
