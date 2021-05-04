@@ -6,10 +6,19 @@ class PlayerInfo
 public:
 	PlayerInfo();
 
-	int Life;
-	int CurrentLevel;
-	int Score;
 
 	void SetToDefault();
+	bool HasLife() const; //does player have at least one life?
+	int GetNoLives() const;
+	int GetCurrentLevel() const;
+	unsigned int GetScore() const;
+
+	void LoseLife();
+	void LevelCompleted();
+	void AddScore(unsigned int score);
+private:
+	int m_Lives;
+	int m_CurrentLevel;
+	unsigned int m_Score;
 };
 

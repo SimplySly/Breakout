@@ -33,7 +33,7 @@ bool Brick::IsActive() const
 	return m_IsActive;
 }
 
-int Brick::GetScore() const
+unsigned int Brick::GetScore() const
 {
 	return m_BreakScore;
 }

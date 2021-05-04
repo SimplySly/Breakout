@@ -192,7 +192,7 @@ bool XMLLevelLoader::LoadBrickTypes(XMLElement* levelElement)
 			brickType.BreakSoundName = nullptr;
 		}
 
-		if (pBrickTypeElement->QueryIntAttribute("BreakScore", &brickType.BreakScore) != XML_SUCCESS)
+		if (pBrickTypeElement->QueryUnsignedAttribute("BreakScore", &brickType.BreakScore) != XML_SUCCESS)
 		{
 			//can be omitted if brick can't break
 			brickType.BreakScore = 0;

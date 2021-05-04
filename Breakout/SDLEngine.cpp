@@ -176,15 +176,15 @@ bool SDLEngine::InitGameState()
 		return false;
 	}
 
-	if (!m_GameTextures.AddFontTexture(string("LEVEL ") + to_string(m_PlayerInfo.CurrentLevel), "LevelNumber", m_Renderer, m_Font, m_HudTextColor))
+	if (!m_GameTextures.AddFontTexture(string("LEVEL ") + to_string(m_PlayerInfo.GetCurrentLevel()), "LevelNumber", m_Renderer, m_Font, m_HudTextColor))
 	{
 		return false;
 	}
-	if (!m_GameTextures.AddFontTexture(string("LIFE: ") + to_string(m_PlayerInfo.Life), "Life", m_Renderer, m_Font, m_HudTextColor))
+	if (!m_GameTextures.AddFontTexture(string("LIFE: ") + to_string(m_PlayerInfo.GetNoLives()), "Life", m_Renderer, m_Font, m_HudTextColor))
 	{
 		return false;
 	}
-	if (!m_GameTextures.AddFontTexture(string("SCORE: ") + to_string(m_PlayerInfo.Score), "Score", m_Renderer, m_Font, m_HudTextColor))
+	if (!m_GameTextures.AddFontTexture(string("SCORE: ") + to_string(m_PlayerInfo.GetScore()), "Score", m_Renderer, m_Font, m_HudTextColor))
 	{
 		return false;
 	}
@@ -284,9 +284,9 @@ void SDLEngine::ResetGameObjects()
 void SDLEngine::BallDeath()
 {
 	m_UpdateHud = true;
-	m_PlayerInfo.Life--;
+	m_PlayerInfo.LoseLife();
 
-	if (m_PlayerInfo.Life < 1)
+	if (!m_PlayerInfo.HasLife())
 	{
 		m_GameState = GAME_STATE_LOSE;
 		ClearLevelObjects();
@@ -301,15 +301,15 @@ void SDLEngine::BallDeath()
 
 void SDLEngine::LevelWin()
 {
-	m_PlayerInfo.CurrentLevel++;
-	if (!m_GameTextures.UpdateFontTexture("LEVEL " + to_string(m_PlayerInfo.CurrentLevel), "LevelNumber", m_Renderer, m_Font, m_HudTextColor))
+	m_PlayerInfo.LevelCompleted();
+	if (!m_GameTextures.UpdateFontTexture("LEVEL " + to_string(m_PlayerInfo.GetCurrentLevel()), "LevelNumber", m_Renderer, m_Font, m_HudTextColor))
 	{
 		printf_s("Failed to update texture");
 		m_GameState = GAME_STATE_QUIT;
 		return;
 	}
 	ClearLevelObjects();
-	if (m_PlayerInfo.CurrentLevel > m_LevelList.size())
+	if (m_PlayerInfo.GetCurrentLevel() > m_LevelList.size())
 	{
 		m_GameState = GAME_STATE_WIN;
 	}
@@ -492,7 +492,7 @@ void SDLEngine::UpdatePlayingState()
 			{
 				Mix_PlayChannel(-1, brick.GetBreakSound(), 0);
 
-				m_PlayerInfo.Score += brick.GetScore();
+				m_PlayerInfo.AddScore(brick.GetScore());
 				m_LevelInfo.BricksToDestroy--;
 				m_UpdateHud = true;
 
@@ -572,7 +572,7 @@ void SDLEngine::Update()
 		if (m_Input->IsKeyPressed(SDLK_SPACE) || m_Input->IsKeyPressed(SDLK_RETURN))
 		{
 			m_GameState = GAME_STATE_PAUSE;
-			if (!LoadLevelObjects(m_LevelList[m_PlayerInfo.CurrentLevel - 1]))
+			if (!LoadLevelObjects(m_LevelList[m_PlayerInfo.GetCurrentLevel() - 1]))
 			{
 				m_GameState = GAME_STATE_QUIT;
 				cout << "corrupted game data!" << endl;
@@ -588,7 +588,7 @@ void SDLEngine::Update()
 		{
 			m_GameState = GAME_STATE_LEVEL_DISPLAY;
 			m_PlayerInfo.SetToDefault();
-			m_GameTextures.UpdateFontTexture("LEVEL " + to_string(m_PlayerInfo.CurrentLevel), "LevelNumber", m_Renderer, m_Font, m_HudTextColor);
+			m_GameTextures.UpdateFontTexture("LEVEL " + to_string(m_PlayerInfo.GetCurrentLevel()), "LevelNumber", m_Renderer, m_Font, m_HudTextColor);
 		}
 
 		return;
@@ -619,8 +619,8 @@ void SDLEngine::RenderHUD()
 	{
 		m_UpdateHud = false;
 
-		m_GameTextures.UpdateFontTexture(string("LIFE: ") + to_string(m_PlayerInfo.Life), "Life", m_Renderer, m_Font, m_HudTextColor);
-		m_GameTextures.UpdateFontTexture(string("SCORE: ") + to_string(m_PlayerInfo.Score), "Score", m_Renderer, m_Font, m_HudTextColor);
+		m_GameTextures.UpdateFontTexture(string("LIFE: ") + to_string(m_PlayerInfo.GetNoLives()), "Life", m_Renderer, m_Font, m_HudTextColor);
+		m_GameTextures.UpdateFontTexture(string("SCORE: ") + to_string(m_PlayerInfo.GetScore()), "Score", m_Renderer, m_Font, m_HudTextColor);
 	}
 
 	const Texture& pLifeTexture = m_GameTextures["Life"];

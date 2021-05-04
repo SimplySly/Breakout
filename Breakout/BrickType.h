@@ -13,6 +13,6 @@ public:
     Sound HitSound;
     char* BreakSoundName;
     Sound BreakSound;
-    int BreakScore;
+    unsigned int BreakScore;
 };
 

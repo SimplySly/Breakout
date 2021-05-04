@@ -11,7 +11,7 @@ public:
 
 	void DecreaseHitPoints();
 	bool IsActive() const;
-	int GetScore() const;
+	unsigned int GetScore() const;
 
 	const Sprite& GetSprite() const;
 
@@ -20,7 +20,7 @@ public:
 	Mix_Chunk* GetBreakSound() const;
 private:
 	int m_HitPoints;
-	int m_BreakScore;
+	unsigned int m_BreakScore;
 	bool m_IsActive;
 
 	Sprite m_Sprite;
