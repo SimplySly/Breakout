@@ -7,9 +7,19 @@ class LevelInfo
 {
 public:
 	LevelInfo();
+	
+	void SetBackGroundTexture(const Texture &t);
+	void AddIndestructibleBrick(const Brick &b);
+	void AddDestructibleBrick(const Brick &b);
+	void HitBrick(size_t i);
+	void Reset();
+	bool IsLevelClear();
 
-	Texture BackgroundTexture;
-	int BricksToDestroy;
-	std::vector<Brick> LevelBricks;
+	SDL_Texture* GetBackgroundTexture();
+	const std::vector<Brick>& GetBricks() const;
+private:
+	Texture m_BackgroundTexture;
+	int m_BricksToDestroy;
+	std::vector<Brick> m_LevelBricks;
 };
 

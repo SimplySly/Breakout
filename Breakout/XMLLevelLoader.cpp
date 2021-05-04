@@ -23,6 +23,8 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, SDL_R
 	levelContext.BrickSizeX = 9;
 	levelContext.BrickSizeY = 3;
 
+	levelInfo.Reset();
+
 	doc.LoadFile(path.c_str());
 
 	if (doc.ErrorID())
@@ -41,7 +43,10 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, SDL_R
 		return false;
 	}
 
-	levelInfo.BackgroundTexture.LoadTextureFromFile(levelContext.BackgroundTexture, pRenderer);
+	Texture t;
+
+	t.LoadTextureFromFile(levelContext.BackgroundTexture, pRenderer);
+	levelInfo.SetBackGroundTexture(t);
 
 	if (!LoadBrickTypes(levelElement))
 	{
@@ -229,9 +234,6 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 	string brickId;
 	int rowIndex = 0, columnIndex = 0;
 
-	//just to be sure
-	levelInfo.BricksToDestroy = 0;
-
 	while (!LevelStream.eof())
 	{
 		LevelStream >> brickId;
@@ -246,11 +248,14 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 					(int)(levelContext.BrickSizeX * spaceUnitX),
 					(int)(levelContext.BrickSizeY * spaceUnitY),
 					m_BrickTypes[i].Texture);
-				levelInfo.LevelBricks.push_back(Brick(m_BrickTypes[i], sprite));
 
 				if (m_BrickTypes[i].HitPoints > 0)
 				{
-					levelInfo.BricksToDestroy++;
+					levelInfo.AddDestructibleBrick(Brick(m_BrickTypes[i], sprite));
+				}
+				else
+				{
+					levelInfo.AddIndestructibleBrick(Brick(m_BrickTypes[i], sprite));
 				}
 
 				break;
@@ -276,7 +281,7 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 
 	}
 
-	if (levelInfo.LevelBricks.empty())
+	if (levelInfo.GetBricks().empty())
 	{
 		return false;
 	}

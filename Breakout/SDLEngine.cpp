@@ -231,7 +231,7 @@ void SDLEngine::ClearLevelObjects()
 		m_Ball = nullptr;
 	}
 
-	m_LevelInfo.LevelBricks.clear();
+	m_LevelInfo.Reset();
 }
 
 bool SDLEngine::LoadLevelObjects(const string& levelPath)
@@ -259,8 +259,7 @@ bool SDLEngine::LoadLevelObjects(const string& levelPath)
 
 	XMLLevelLoader level;
 
-	if (!level.LoadFromXML(levelPath, m_LevelInfo,
-		m_Renderer, m_PlayableScreenWidth, m_PlayableScreenHeight))
+	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_Renderer, m_PlayableScreenWidth, m_PlayableScreenHeight))
 	{
 		return false;
 	}
@@ -476,27 +475,29 @@ void SDLEngine::UpdatePlayingState()
 	newPos.Width = m_Ball->sprite.Width;
 	newPos.Height = m_Ball->sprite.Height;
 
-	for (auto& brick : m_LevelInfo.LevelBricks)
+	auto& levelBricks = m_LevelInfo.GetBricks();
+
+	for (size_t i = 0; i < levelBricks.size(); i++)
 	{
-		if (brick.IsActive())
+		if (levelBricks[i].IsActive())
 		{
-			auto collision = CircleAndRect(newPos, brick.GetSprite());
+			auto collision = CircleAndRect(newPos, levelBricks[i].GetSprite());
 			if (collision == COLLISION_NONE)
 			{
 				continue;
 			}
 
-			Mix_PlayChannel(-1, brick.GetHitSound(), 0);
-			brick.DecreaseHitPoints();
-			if (!brick.IsActive())
-			{
-				Mix_PlayChannel(-1, brick.GetBreakSound(), 0);
+			Mix_PlayChannel(-1, levelBricks[i].GetHitSound(), 0);
+			m_LevelInfo.HitBrick(i);
 
-				m_PlayerInfo.AddScore(brick.GetScore());
-				m_LevelInfo.BricksToDestroy--;
+			if (!levelBricks[i].IsActive())
+			{
+				Mix_PlayChannel(-1, levelBricks[i].GetBreakSound(), 0);
+
+				m_PlayerInfo.AddScore(levelBricks[i].GetScore());
 				m_UpdateHud = true;
 
-				if (m_LevelInfo.BricksToDestroy < 1)
+				if (m_LevelInfo.IsLevelClear())
 				{
 					LevelWin();
 
@@ -638,9 +639,9 @@ void SDLEngine::RenderGame()
 	//Clear screen
 	SDL_RenderClear(m_Renderer);
 
-	SDL_RenderCopy(m_Renderer, m_LevelInfo.BackgroundTexture.GetTexture(), nullptr, nullptr);
+	SDL_RenderCopy(m_Renderer, m_LevelInfo.GetBackgroundTexture(), nullptr, nullptr);
 
-	for (auto& brick : m_LevelInfo.LevelBricks)
+	for (auto& brick : m_LevelInfo.GetBricks())
 	{
 		if (brick.IsActive())
 		{
