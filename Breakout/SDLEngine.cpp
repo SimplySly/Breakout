@@ -231,7 +231,7 @@ void SDLEngine::ClearLevelObjects()
 		m_Ball = nullptr;
 	}
 
-	m_LevelBricks.clear();
+	m_LevelInfo.LevelBricks.clear();
 }
 
 bool SDLEngine::LoadLevelObjects(const string& levelPath)
@@ -259,7 +259,7 @@ bool SDLEngine::LoadLevelObjects(const string& levelPath)
 
 	XMLLevelLoader level;
 
-	if (!level.LoadFromXML(levelPath, m_LevelInfo, m_LevelBricks,
+	if (!level.LoadFromXML(levelPath, m_LevelInfo,
 		m_Renderer, m_PlayableScreenWidth, m_PlayableScreenHeight))
 	{
 		return false;
@@ -476,7 +476,7 @@ void SDLEngine::UpdatePlayingState()
 	newPos.Width = m_Ball->sprite.Width;
 	newPos.Height = m_Ball->sprite.Height;
 
-	for (auto& brick : m_LevelBricks)
+	for (auto& brick : m_LevelInfo.LevelBricks)
 	{
 		if (brick.IsActive())
 		{
@@ -640,7 +640,7 @@ void SDLEngine::RenderGame()
 
 	SDL_RenderCopy(m_Renderer, m_LevelInfo.BackgroundTexture.GetTexture(), nullptr, nullptr);
 
-	for (auto& brick : m_LevelBricks)
+	for (auto& brick : m_LevelInfo.LevelBricks)
 	{
 		if (brick.IsActive())
 		{

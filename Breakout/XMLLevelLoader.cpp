@@ -15,7 +15,7 @@ XMLLevelLoader::~XMLLevelLoader()
 {
 }
 
-bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vector<Brick>& bricks, SDL_Renderer* pRenderer, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, SDL_Renderer* pRenderer, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLDocument doc;
 	XMLLevelContext levelContext = { 0 };
@@ -53,7 +53,7 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, vecto
 		return false;
 	}
 
-	bool ret = LoadBrickList(levelElement, levelContext, bricks, levelInfo.BricksToDestroy, brickAreaWidth, brickAreaHeight);
+	bool ret = LoadBrickList(levelElement, levelContext, levelInfo, brickAreaWidth, brickAreaHeight);
 	if (!ret)
 	{
 		return false;
@@ -204,7 +204,7 @@ bool XMLLevelLoader::LoadBrickTypes(XMLElement* levelElement)
 	return true;
 }
 
-bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelContext& levelContext, std::vector<Brick>& bricks, int& BricksToDestroy, int brickAreaWidth, int brickAreaHeight)
+bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelContext& levelContext, LevelInfo& levelInfo, int brickAreaWidth, int brickAreaHeight)
 {
 	XMLElement* brickList = levelElement->FirstChildElement("Bricks");
 	if (brickList == nullptr)
@@ -229,7 +229,8 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 	string brickId;
 	int rowIndex = 0, columnIndex = 0;
 
-	BricksToDestroy = 0;
+	//just to be sure
+	levelInfo.BricksToDestroy = 0;
 
 	while (!LevelStream.eof())
 	{
@@ -245,11 +246,11 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 					(int)(levelContext.BrickSizeX * spaceUnitX),
 					(int)(levelContext.BrickSizeY * spaceUnitY),
 					m_BrickTypes[i].Texture);
-				bricks.push_back(Brick(m_BrickTypes[i], sprite));
+				levelInfo.LevelBricks.push_back(Brick(m_BrickTypes[i], sprite));
 
 				if (m_BrickTypes[i].HitPoints > 0)
 				{
-					BricksToDestroy++;
+					levelInfo.BricksToDestroy++;
 				}
 
 				break;
@@ -275,7 +276,7 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 
 	}
 
-	if (bricks.empty())
+	if (levelInfo.LevelBricks.empty())
 	{
 		return false;
 	}
