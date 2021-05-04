@@ -3,7 +3,7 @@
 #define PI 3.14159265358979323846f
 
 template<class T>
-inline T& clamp(T& v, const T& lo, const T& hi)
+inline T& Clamp(T& v, const T& lo, const T& hi)
 {
 	v = v > lo ? v : lo;
 	v = v < hi ? v : hi;
@@ -11,7 +11,7 @@ inline T& clamp(T& v, const T& lo, const T& hi)
 }
 
 template<class T>
-inline T square(const T &v)
+inline T Square(const T &v)
 {
 	return v * v;
 }
@@ -23,7 +23,7 @@ public:
 	Vector2(float x, float y);
 	float x, y;
 
-	void rotate(float angle);
-	float dot(const Vector2& v2);
-	Vector2& reflect(Vector2 &v2);
+	void Rotate(float angle);
+	float Dot(const Vector2& v2);
+	Vector2& Reflect(Vector2 &v2);
 };

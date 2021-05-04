@@ -26,13 +26,13 @@ SDLEngine::SDLEngine()
 	m_GameState = GAME_STATE_PAUSE;
 }
 
-SDLEngine::SDLEngine(int ScreenWidth, int ScreenHeight) : SDLEngine()
+SDLEngine::SDLEngine(int screenWidth, int screenHeight) : SDLEngine()
 {
-	m_ScreenWidth = ScreenWidth;
-	m_ScreenHeight = ScreenHeight;
+	m_ScreenWidth = screenWidth;
+	m_ScreenHeight = screenHeight;
 
-	m_PlayableScreenWidth = ScreenWidth;
-	m_PlayableScreenHeight = ScreenHeight - HUD_HEIGHT;
+	m_PlayableScreenWidth = screenWidth;
+	m_PlayableScreenHeight = screenHeight - HUD_HEIGHT;
 }
 
 SDLEngine::~SDLEngine()
@@ -406,8 +406,8 @@ void SDLEngine::BounceBallOffPaddle()
 		return;
 	}
 
-	bounceNormal.rotate(rotateBounceNormalAngle);
-	bounceNormal.reflect(ballDirection);
+	bounceNormal.Rotate(rotateBounceNormalAngle);
+	bounceNormal.Reflect(ballDirection);
 
 
 	if (ballDirection.y > 0)

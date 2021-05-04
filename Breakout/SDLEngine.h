@@ -70,7 +70,7 @@ class SDLEngine
 {
 public:
 	SDLEngine();
-	SDLEngine(int ScreenWidth, int ScreenHeight);
+	SDLEngine(int screenWidth, int screenHeight);
 	~SDLEngine();
 
 	bool Init();

@@ -9,7 +9,7 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 
 	collisionY = circle.CenterY();
 
-	clamp(collisionY, rect.Top(), rect.Bottom());
+	Clamp(collisionY, rect.Top(), rect.Bottom());
 
 	if (circle.CenterX() < rect.Left())
 	{
@@ -25,7 +25,7 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 	}
 
 	collisionY = circle.CenterY();
-	clamp(collisionY, rect.Top(), rect.Bottom());
+	Clamp(collisionY, rect.Top(), rect.Bottom());
 
 	if (CircleContainsDot(circle, collisionX, collisionY))
 	{
@@ -107,5 +107,5 @@ CollisionSide CircleAndRect(const Sprite& circle, const Sprite& rect)
 
 bool CircleContainsDot(const Sprite &circle, float x, float y)
 {
-	return square(circle.CenterX() - x) + square(circle.CenterY() - y) < square(circle.Radius());
+	return Square(circle.CenterX() - x) + Square(circle.CenterY() - y) < Square(circle.Radius());
 }

@@ -231,7 +231,7 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 	const char* brickListString = textNode->Value();
 
 	string s(brickListString);
-	trim(s);
+	Trim(s);
 
 	stringstream LevelStream(s);
 	string brickId;
