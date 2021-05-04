@@ -3,12 +3,13 @@
 #include "Sound.h"
 
 
-class GameObject
+struct GameObject
 {
 public:
+	GameObject();
+	
 	float SpeedX;
 	float SpeedY;
-
 	
 	Sound HitSound;
 	Sprite sprite;

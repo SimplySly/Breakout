@@ -1,15 +1,39 @@
 #include "Brick.h"
 
+
+Brick::Brick(const BrickType& brickType, const class Sprite& sprite) 
+{
+	m_HitPoints = brickType.HitPoints;
+	m_BreakScore = brickType.BreakScore;
+	BreakSound = brickType.BreakSound;
+	HitSound = brickType.HitSound;
+
+
+	Sprite = sprite;
+
+	m_IsActive = true;
+}
+
 void Brick::DecreaseHitPoints()
 {
-	if (!IsActive || HitPoints == -1)
+	if (!m_IsActive || m_HitPoints == -1)
 	{
 		return;
 	}
 
-	HitPoints--;
-	if (HitPoints < 1)
+	m_HitPoints--;
+	if (m_HitPoints < 1)
 	{
-		IsActive = false;
+		m_IsActive = false;
 	}
+}
+
+bool Brick::IsActive() const
+{
+	return m_IsActive;
+}
+
+int Brick::GetScore() const
+{
+	return m_BreakScore;
 }

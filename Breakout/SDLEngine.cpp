@@ -478,9 +478,9 @@ void SDLEngine::UpdatePlayingState()
 
 	for (auto& brick : m_LevelBricks)
 	{
-		if (brick.IsActive)
+		if (brick.IsActive())
 		{
-			auto collision = CircleAndRect(newPos, brick.sprite);
+			auto collision = CircleAndRect(newPos, brick.Sprite);
 			if (collision == COLLISION_NONE)
 			{
 				continue;
@@ -488,11 +488,11 @@ void SDLEngine::UpdatePlayingState()
 
 			Mix_PlayChannel(-1, brick.HitSound.GetMixChunk(), 0);
 			brick.DecreaseHitPoints();
-			if (!brick.IsActive)
+			if (!brick.IsActive())
 			{
 				Mix_PlayChannel(-1, brick.BreakSound.GetMixChunk(), 0);
 
-				m_PlayerInfo.Score += brick.Score;
+				m_PlayerInfo.Score += brick.GetScore();
 				m_LevelInfo.BricksToDestroy--;
 				m_UpdateHud = true;
 
@@ -647,9 +647,9 @@ void SDLEngine::RenderGame()
 
 	for (auto& brick : m_LevelBricks)
 	{
-		if (brick.IsActive)
+		if (brick.IsActive())
 		{
-			RenderSprite(&brick.sprite);
+			RenderSprite(&brick.Sprite);
 		}
 	}
 

@@ -240,25 +240,18 @@ bool XMLLevelLoader::LoadBrickList(XMLElement* levelElement, const XMLLevelConte
 		{
 			if (brickId == m_BrickTypes[i].Id)
 			{
-				Brick brick;
-
-				brick.HitPoints = m_BrickTypes[i].HitPoints;
-				brick.Score = m_BrickTypes[i].BreakScore;
-				brick.BreakSound = m_BrickTypes[i].BreakSound;
-				brick.HitSound = m_BrickTypes[i].HitSound;
-				brick.IsActive = brick.HitPoints > 0 || brick.HitPoints == -1;
-				if (brick.HitPoints > 0)
-				{
-					BricksToDestroy++;
-				}
-
-				brick.sprite = Sprite(columnIndex * levelContext.BrickSizeX * spaceUnitX + columnIndex * levelContext.ColumnSpacing * spaceUnitX,
+				Sprite sprite(columnIndex * levelContext.BrickSizeX * spaceUnitX + columnIndex * levelContext.ColumnSpacing * spaceUnitX,
 					rowIndex * levelContext.BrickSizeY * spaceUnitY + rowIndex * levelContext.RowSpacing * spaceUnitY,
 					(int)(levelContext.BrickSizeX * spaceUnitX),
 					(int)(levelContext.BrickSizeY * spaceUnitY),
 					m_BrickTypes[i].Texture);
+				bricks.push_back(Brick(m_BrickTypes[i], sprite));
 
-				bricks.push_back(brick);
+				if (m_BrickTypes[i].HitPoints > 0)
+				{
+					BricksToDestroy++;
+				}
+
 				break;
 			}
 		}
