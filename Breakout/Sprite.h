@@ -13,7 +13,7 @@ public:
 	int Width;
 	int Height;
 
-	SDL_Texture* GetTexture();
+	SDL_Texture* GetTexture() const;
 
 	float Left() const;
 	float Right() const;

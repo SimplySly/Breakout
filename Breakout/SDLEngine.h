@@ -82,7 +82,7 @@ private:
 	bool InitGameState(); 
 	bool LoadLevelList();
 
-	void RenderSprite(Sprite* sprite);
+	void RenderSprite(const Sprite& sprite);
 
 	bool BounceOppositeDirection(float distanceX, const Vector2& ballDirection);
 	bool BallBoundaryUpdate(float ballDeltaX, float ballDeltaY, bool& flipX, bool& flipY);

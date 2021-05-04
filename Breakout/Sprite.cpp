@@ -14,7 +14,7 @@ Sprite::Sprite(float PosX, float PosY, int Width, int Height, Texture t)
 	m_Texture = t;
 }
 
-SDL_Texture* Sprite::GetTexture()
+SDL_Texture* Sprite::GetTexture() const
 {
 	return m_Texture.GetTexture();
 }

@@ -480,17 +480,17 @@ void SDLEngine::UpdatePlayingState()
 	{
 		if (brick.IsActive())
 		{
-			auto collision = CircleAndRect(newPos, brick.Sprite);
+			auto collision = CircleAndRect(newPos, brick.GetSprite());
 			if (collision == COLLISION_NONE)
 			{
 				continue;
 			}
 
-			Mix_PlayChannel(-1, brick.HitSound.GetMixChunk(), 0);
+			Mix_PlayChannel(-1, brick.GetHitSound(), 0);
 			brick.DecreaseHitPoints();
 			if (!brick.IsActive())
 			{
-				Mix_PlayChannel(-1, brick.BreakSound.GetMixChunk(), 0);
+				Mix_PlayChannel(-1, brick.GetBreakSound(), 0);
 
 				m_PlayerInfo.Score += brick.GetScore();
 				m_LevelInfo.BricksToDestroy--;
@@ -605,17 +605,12 @@ void SDLEngine::Update()
 	}
 }
 
-void SDLEngine::RenderSprite(Sprite* sprite)
+void SDLEngine::RenderSprite(const Sprite& sprite)
 {
-	if (sprite == nullptr)
-	{
-		return;
-	}
-
-	SDL_Rect renderQuad = { (int)sprite->PositionX, (int)sprite->PositionY, sprite->Width, sprite->Height };
+	SDL_Rect renderQuad = { (int)sprite.PositionX, (int)sprite.PositionY, sprite.Width, sprite.Height };
 
 	//Render to screen
-	SDL_RenderCopy(m_Renderer, sprite->GetTexture(), nullptr, &renderQuad);
+	SDL_RenderCopy(m_Renderer, sprite.GetTexture(), nullptr, &renderQuad);
 }
 
 void SDLEngine::RenderHUD()
@@ -649,13 +644,13 @@ void SDLEngine::RenderGame()
 	{
 		if (brick.IsActive())
 		{
-			RenderSprite(&brick.Sprite);
+			RenderSprite(brick.GetSprite());
 		}
 	}
 
-	RenderSprite(&m_Paddle->sprite);
+	RenderSprite(m_Paddle->sprite);
 
-	RenderSprite(&m_Ball->sprite);
+	RenderSprite(m_Ball->sprite);
 
 	RenderHUD();
 
