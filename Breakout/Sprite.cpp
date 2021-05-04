@@ -9,9 +9,9 @@ Sprite::Sprite()
 }
 
 Sprite::Sprite(float PosX, float PosY, int Width, int Height, Texture t) 
-	: PositionX(PosX), PositionY(PosY), Width(Width), Height(Height)
+	: PositionX(PosX), PositionY(PosY), Width(Width), Height(Height), m_Texture(t)
 {
-	m_Texture = t;
+
 }
 
 SDL_Texture* Sprite::GetTexture() const
