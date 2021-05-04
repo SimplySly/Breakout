@@ -45,7 +45,10 @@ bool XMLLevelLoader::LoadFromXML(const string& path, LevelInfo& levelInfo, SDL_R
 
 	Texture t;
 
-	t.LoadTextureFromFile(levelContext.BackgroundTexture, pRenderer);
+	if (!t.LoadTextureFromFile(levelContext.BackgroundTexture, pRenderer))
+	{
+		return false;
+	}
 	levelInfo.SetBackGroundTexture(t);
 
 	if (!LoadBrickTypes(levelElement))

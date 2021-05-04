@@ -589,7 +589,12 @@ void SDLEngine::Update()
 		{
 			m_GameState = GAME_STATE_LEVEL_DISPLAY;
 			m_PlayerInfo.SetToDefault();
-			m_GameTextures.UpdateFontTexture("LEVEL " + to_string(m_PlayerInfo.GetCurrentLevel()), "LevelNumber", m_Renderer, m_Font, m_HudTextColor);
+			if (!m_GameTextures.UpdateFontTexture("LEVEL " + to_string(m_PlayerInfo.GetCurrentLevel()), "LevelNumber", m_Renderer, m_Font, m_HudTextColor))
+			{
+				printf_s("Failed to update texture");
+				m_GameState = GAME_STATE_QUIT;
+				return;
+			}
 		}
 
 		return;
@@ -620,8 +625,19 @@ void SDLEngine::RenderHUD()
 	{
 		m_UpdateHud = false;
 
-		m_GameTextures.UpdateFontTexture(string("LIFE: ") + to_string(m_PlayerInfo.GetNoLives()), "Life", m_Renderer, m_Font, m_HudTextColor);
-		m_GameTextures.UpdateFontTexture(string("SCORE: ") + to_string(m_PlayerInfo.GetScore()), "Score", m_Renderer, m_Font, m_HudTextColor);
+		if (!m_GameTextures.UpdateFontTexture(string("SCORE: ") + to_string(m_PlayerInfo.GetScore()), "Score", m_Renderer, m_Font, m_HudTextColor))
+		{
+			printf_s("Failed to update texture");
+			m_GameState = GAME_STATE_QUIT;
+			return;
+		}
+
+		if (!m_GameTextures.UpdateFontTexture(string("LIFE: ") + to_string(m_PlayerInfo.GetNoLives()), "Life", m_Renderer, m_Font, m_HudTextColor))
+		{
+			printf_s("Failed to update texture");
+			m_GameState = GAME_STATE_QUIT;
+			return;
+		}
 	}
 
 	const Texture& pLifeTexture = m_GameTextures["Life"];
