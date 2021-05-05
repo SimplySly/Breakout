@@ -242,9 +242,16 @@ bool SDLEngine::LoadLevelObjects(const string& levelPath)
 		return false;
 	}
 
+	Sound s;
+	if (!s.LoadSound("Sounds/wood_hit.wav"))
+	{
+		return false;
+	}
+
 	m_Paddle = new GameObject();
 	m_Paddle->SpeedX = 0.0f;
 	m_Paddle->SpeedY = 0.0f;
+	m_Paddle->HitSound = s;
 	m_Paddle->sprite = Sprite((float)m_PlayableScreenWidth / 2 - PADDLE_WIDTH / 2, (float)m_PlayableScreenHeight * 29 / 30 - 10, PADDLE_WIDTH, PADDLE_HEIGHT, t);
 
 	if (!t.LoadTextureFromFile("Textures/ball/ball.png", m_Renderer))
@@ -520,6 +527,7 @@ void SDLEngine::UpdatePlayingState()
 	auto collision = CircleAndRect(newPos, m_Paddle->sprite);
 	if (collision != COLLISION_NONE)
 	{
+		Mix_PlayChannel(-1, m_Paddle->HitSound.GetMixChunk(), 0);
 		if (collision == COLLISION_LEFT || collision == COLLISION_RIGHT)
 		{
 			flipX = true;
