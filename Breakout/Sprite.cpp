@@ -8,8 +8,8 @@ Sprite::Sprite()
 	Height = 0;
 }
 
-Sprite::Sprite(float PosX, float PosY, int Width, int Height, Texture t) 
-	: PositionX(PosX), PositionY(PosY), Width(Width), Height(Height), m_Texture(t)
+Sprite::Sprite(float posX, float posY, int width, int height, Texture t) 
+	: PositionX(posX), PositionY(posY), Width(width), Height(height), m_Texture(t)
 {
 
 }

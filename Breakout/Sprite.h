@@ -1,11 +1,11 @@
 #pragma once
 #include "Texture.h"
 
-class Sprite
+struct Sprite
 {
 public:
 	Sprite();
-	Sprite(float PosX, float PosY, int Width, int Height, Texture t);
+	Sprite(float posX, float posY, int width, int height, Texture t);
 
 	float PositionX;
 	float PositionY;
