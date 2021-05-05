@@ -7,7 +7,7 @@
 class Brick
 {
 public:
-	Brick(const BrickType& brickType, const class Sprite& sprite);
+	Brick(const BrickType& brickType, const Sprite& sprite);
 
 	void DecreaseHitPoints();
 	bool IsActive() const;
