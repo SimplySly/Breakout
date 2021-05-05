@@ -188,7 +188,7 @@ bool SDLEngine::InitGameState()
 	{
 		return false;
 	}
-	
+
 	if (!m_GameTextures.AddFontTexture("Press SPACE to start", "StartMsg", m_Renderer, m_Font, m_HudTextColor))
 	{
 		return false;
@@ -384,7 +384,6 @@ bool SDLEngine::BounceOppositeDirection(float distanceX, const Vector2& ballDire
 		}
 	}
 #elif defined(OPPOSITE_DIRECTION_VIA_SPEED)
-	cout << "called" << endl;
 	if (m_Ball->SpeedX > 0.0f && m_Paddle->SpeedX < 0.0f
 		|| m_Ball->SpeedX < 0.0f && m_Paddle->SpeedX > 0.0f)
 	{
